@@ -6,9 +6,11 @@
 //
 
 import Foundation
+import SwiftUI
 
-class User {
+class User: ObservableObject {
     @Published var token = ""
     @Published var isAdmin = false
+    @Published var isLoggedIn = false
     static var shared = User()
 }

@@ -8,17 +8,25 @@
 import SwiftUI
 
 struct ContentView: View {
+    @ObservedObject var viewModel = AppViewModel(user: User.shared)
+    @StateObject var user = User.shared
     var body: some View {
-        VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundStyle(.tint)
-            Text("Hello, world!")
+        ZStack {
+            
+            Group {
+                if user.isLoggedIn {
+                    CandidatesView()
+                } else {
+                    LoginView(viewModel: viewModel.authViewModel)
+                }
+            }
+            
         }
-        .padding()
     }
 }
 
 #Preview {
-    ContentView()
+    NavigationStack {
+        ContentView()
+    }
 }

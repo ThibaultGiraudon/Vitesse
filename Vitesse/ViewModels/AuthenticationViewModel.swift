@@ -15,14 +15,19 @@ class AuthenticationViewModel: ObservableObject {
     @Published var confirmPassword = ""
     @Published var errorMessage: String?
     
+    let onLogginSucceed: ((Token) -> ())
+    
+    init(_ callback: @escaping (Token) -> ()) {
+        onLogginSucceed = callback
+    }
+    
     func login() {
         Task {
             do {
                 let response: Token = try await API.shared.call(endPoint: API.AuthEndPoints.auth(email: email, password: password))
                 
                 print(response.token)
-                User.shared.token = response.token
-                User.shared.isAdmin = response.isAdmin
+                onLogginSucceed(response)
             } catch {
                 print(error.localizedDescription)
             }

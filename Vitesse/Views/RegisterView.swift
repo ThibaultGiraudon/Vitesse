@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct RegisterView: View {
-    @ObservedObject var viewModel = AuthenticationViewModel()
+    @ObservedObject var viewModel: AuthenticationViewModel
     var body: some View {
         VStack {
             Text("Register")
@@ -61,5 +61,5 @@ struct RegisterView: View {
 }
 
 #Preview {
-    RegisterView()
+    RegisterView(viewModel: AuthenticationViewModel { _ in })
 }

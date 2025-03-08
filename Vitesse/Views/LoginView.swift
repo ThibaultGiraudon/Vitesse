@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct LoginView: View {
-    @ObservedObject var viewModel = AuthenticationViewModel()
+    @ObservedObject var viewModel: AuthenticationViewModel
     var body: some View {
         VStack {
             Text("Login")
@@ -38,7 +38,7 @@ struct LoginView: View {
                     }
             }
             NavigationLink {
-                RegisterView()
+                RegisterView(viewModel: viewModel)
             } label: {
                 Text("Register")
                     .foregroundStyle(.blue)
@@ -49,11 +49,15 @@ struct LoginView: View {
                     }
             }
         }
+        .onAppear {
+            viewModel.email = "admin@vitesse.com"
+            viewModel.password = "test123"
+        }
     }
 }
 
 #Preview {
     NavigationStack {
-        LoginView()
+        LoginView(viewModel: AuthenticationViewModel {_ in })
     }
 }
