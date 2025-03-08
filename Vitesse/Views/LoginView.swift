@@ -8,11 +8,52 @@
 import SwiftUI
 
 struct LoginView: View {
+    @ObservedObject var viewModel = AuthenticationViewModel()
     var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+        VStack {
+            Text("Login")
+                .font(.largeTitle)
+            VStack(alignment: .leading) {
+                Text("Email/Username")
+                TextField("", text: $viewModel.email)
+                    .textFieldStyle(.roundedBorder)
+                    .autocapitalization(.none)
+                    .keyboardType(.emailAddress)
+                Text("Password")
+                SecureField("", text: $viewModel.password)
+                    .textFieldStyle(.roundedBorder)
+                Button("Forgot password?") {}
+            }
+            .padding(30)
+            Button {
+                viewModel.login()
+                print(User.shared.token)
+            } label: {
+                Text("Sign In")
+                    .foregroundStyle(.blue)
+                    .padding()
+                    .background {
+                        Rectangle()
+                            .stroke()
+                    }
+            }
+            NavigationLink {
+                RegisterView()
+            } label: {
+                Text("Register")
+                    .foregroundStyle(.blue)
+                    .padding()
+                    .background {
+                        Rectangle()
+                            .stroke()
+                    }
+            }
+        }
     }
 }
 
 #Preview {
-    LoginView()
+    NavigationStack {
+        LoginView()
+    }
 }

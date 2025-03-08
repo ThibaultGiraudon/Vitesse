@@ -6,3 +6,9 @@
 //
 
 import Foundation
+
+class User {
+    @Published var token = ""
+    @Published var isAdmin = false
+    static var shared = User()
+}
