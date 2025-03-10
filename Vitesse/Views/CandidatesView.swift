@@ -11,12 +11,15 @@ struct CandidatesView: View {
     @ObservedObject var viewModel = CandidatesViewModel()
     @State private var searchText = "" // move in VM
     var filteredCandidate: [Candidate] {
-        return searchText.isEmpty ? viewModel.candidates : self.viewModel.candidates.filter { candidate in
-            candidate.firstName.contains(searchText)
+        viewModel.candidates.filter { candidate in
+            let matchesSearch = searchText.isEmpty || candidate.firstName.contains(searchText)
+            let matchesFav = !showFav || candidate.isFavorite
+            return matchesSearch && matchesFav
         }
     }
     @State private var isEditing = false
     @State private var selectedCandidates = [Candidate]()
+    @State private var showFav = false
     
     var body: some View {
         VStack {
@@ -60,9 +63,9 @@ struct CandidatesView: View {
             } else {
                 ToolbarItem(placement: .topBarTrailing) {
                     Button {
-                        viewModel.fetchCandidates()
+                        showFav.toggle()
                     } label: {
-                        Image(systemName: "star")
+                        Image(systemName: showFav ? "star.fill" : "star")
                     }
                 }
             }
