@@ -40,4 +40,29 @@ class CandidatesViewModel: ObservableObject {
         }
     }
     
+    func deleteCandidates(selectedCandidates: [Candidate]) {
+        Task {
+            selectedCandidates.forEach { candidate in
+                guard candidates.contains(where: {$0.id == candidate.id}) else {
+                    print("cant find \(candidate.firstName)")
+                    return
+                }
+                deleteCandidate(candidate)
+            }
+        }
+    }
+    
+    func deleteCandidate(_ candidate: Candidate) {
+        Task {
+            do {
+                print("deleting \(candidate.firstName)")
+                try await API.shared.call(endPoint: API.CandidatesEndPoints.delete(id: candidate.id))
+                print("successfuly deleted \(candidate.firstName)")
+                fetchCandidates()
+            } catch {
+                print(error.localizedDescription)
+            }
+        }
+    }
+    
 }

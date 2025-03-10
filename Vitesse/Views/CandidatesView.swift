@@ -10,6 +10,14 @@ import SwiftUI
 struct CandidatesView: View {
     @ObservedObject var viewModel = CandidatesViewModel()
     @State private var searchText = "" // move in VM
+    var filteredCandidate: [Candidate] {
+        return searchText.isEmpty ? viewModel.candidates : self.viewModel.candidates.filter { candidate in
+            candidate.firstName.contains(searchText)
+        }
+    }
+    @State private var isEditing = false
+    @State private var selectedCandidates = [Candidate]()
+    
     var body: some View {
         VStack {
             HStack {
@@ -23,21 +31,10 @@ struct CandidatesView: View {
                     .stroke()
             }
             .padding(3)
-            ScrollView(showsIndicators: false) {
-                ForEach(viewModel.candidates, id: \.id) { candidate in
-                    HStack {
-                        Text(candidate.firstName + " " + candidate.lastName.prefix(1) + ".")
-                        Spacer()
-                        Image(systemName: candidate.isFavorite ? "star.fill" : "star")
-                    }
-                    .font(.title)
-                    .padding()
-                    .background {
-                        Rectangle()
-                            .stroke()
-                    }
-                }
+            List(filteredCandidate, id: \.id) { candidate in
+                CandidateRowView(candidate: candidate, isEditing: $isEditing, selectedCandidates: $selectedCandidates)
             }
+            .listStyle(.plain)
         }
         .onAppear {
             viewModel.fetchCandidates()
@@ -46,15 +43,27 @@ struct CandidatesView: View {
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .topBarLeading) {
-                Button("Edit") {
-                    viewModel.createCandidate()
+                Button(isEditing ? "Cancel" : "Edit") {
+                    isEditing.toggle()
                 }
             }
-            ToolbarItem(placement: .topBarTrailing) {
-                Button {
-                    viewModel.fetchCandidates()
-                } label: {
-                    Image(systemName: "star")
+            if isEditing {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button {
+                        viewModel.deleteCandidates(selectedCandidates: selectedCandidates)
+                        selectedCandidates = []
+                        isEditing.toggle()
+                    } label: {
+                        Text("Delete")
+                    }
+                }
+            } else {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button {
+                        viewModel.fetchCandidates()
+                    } label: {
+                        Image(systemName: "star")
+                    }
                 }
             }
         }

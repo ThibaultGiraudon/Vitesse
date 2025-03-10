@@ -11,6 +11,7 @@ extension API {
     enum CandidatesEndPoints: EndPoint {
         case candidate(id: String?)
         case createCandidate(email: String, note: String?, linkedinURL: String?, firstName: String, lastName: String, phone: String)
+        case delete(id: String)
         
         var path: String {
             switch self {
@@ -21,6 +22,8 @@ extension API {
                     return "/candidate/"
                 case .createCandidate:
                     return "/candidate/"
+                case .delete(let id):
+                    return "/candidate/\(id)"
             }
         }
         
@@ -32,6 +35,8 @@ extension API {
                         .get
                 case .createCandidate:
                         .post
+                case .delete:
+                        .delete
             }
         }
         
@@ -42,6 +47,8 @@ extension API {
                 case .createCandidate(let email, let note, let linkedinURL, let firstName, let lastName, let phone):
                     let data = ["email": email, "note": note, "linkedinURL": linkedinURL, "firstName": firstName, "lastName": lastName, "phone": phone]
                     return try? JSONSerialization.data(withJSONObject: data)
+                case .delete:
+                    return nil
             }
         }
         
