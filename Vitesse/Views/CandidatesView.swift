@@ -32,7 +32,7 @@ struct CandidatesView: View {
             }
             .padding(3)
             List(filteredCandidate, id: \.id) { candidate in
-                CandidateRowView(candidate: candidate, isEditing: $isEditing, selectedCandidates: $selectedCandidates)
+                CandidateRowView(viewModel: viewModel, candidate: candidate, isEditing: $isEditing, selectedCandidates: $selectedCandidates)
             }
             .listStyle(.plain)
         }

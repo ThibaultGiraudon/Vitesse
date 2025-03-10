@@ -65,4 +65,20 @@ class CandidatesViewModel: ObservableObject {
         }
     }
     
+    func favorite(candidate: Candidate) {
+        Task {
+            do {
+                var reponse = try await API.shared.call(endPoint: API.CandidatesEndPoints.favorite(id: candidate.id)) as Candidate
+                guard let index = candidates.firstIndex(where: {$0.id == reponse.id}) else {
+                    return
+                }
+                
+                candidates[index] = reponse
+                
+            } catch {
+                print(error.localizedDescription)
+            }
+        }
+    }
+    
 }

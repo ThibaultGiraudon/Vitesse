@@ -12,6 +12,7 @@ extension API {
         case candidate(id: String?)
         case createCandidate(email: String, note: String?, linkedinURL: String?, firstName: String, lastName: String, phone: String)
         case delete(id: String)
+        case favorite(id: String)
         
         var path: String {
             switch self {
@@ -23,7 +24,9 @@ extension API {
                 case .createCandidate:
                     return "/candidate/"
                 case .delete(let id):
-                    return "/candidate/\(id)"
+                    return "/candidate/\(id)/"
+                case .favorite(let id):
+                    return "/candidate/\(id)/favorite"
             }
         }
         
@@ -37,6 +40,8 @@ extension API {
                         .post
                 case .delete:
                         .delete
+                case .favorite:
+                        .post
             }
         }
         
@@ -48,6 +53,8 @@ extension API {
                     let data = ["email": email, "note": note, "linkedinURL": linkedinURL, "firstName": firstName, "lastName": lastName, "phone": phone]
                     return try? JSONSerialization.data(withJSONObject: data)
                 case .delete:
+                    return nil
+                case .favorite:
                     return nil
             }
         }
@@ -62,6 +69,7 @@ extension API {
             guard let url = components.url else {
                 return nil
             }
+            print(url)
             var request = URLRequest(url: url)
             if let body = body {
                 request.httpBody = body

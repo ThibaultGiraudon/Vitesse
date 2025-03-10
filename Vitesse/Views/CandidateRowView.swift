@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct CandidateRowView: View {
+    var viewModel: CandidatesViewModel
     var candidate: Candidate
     @Binding var isEditing: Bool
     @Binding var selectedCandidates: [Candidate]
@@ -34,7 +35,8 @@ struct CandidateRowView: View {
             Spacer()
             Image(systemName: candidate.isFavorite ? "star.fill" : "star")
                 .onTapGesture {
-                    
+                    print(viewModel.candidates)
+                    viewModel.favorite(candidate: candidate)
                 }
         }
         .font(.title)
@@ -48,7 +50,7 @@ struct CandidateRowView: View {
 }
 
 #Preview {
-    @Previewable @State var isEditing = true
-    @Previewable @State var selectedCandidates = [Candidate]()
-    CandidateRowView(candidate: Candidate(id: "123", firstName: "Jean Michel", isFavorite: false, email: "jp@gmail.com", lastName: "Papin"), isEditing: $isEditing, selectedCandidates: $selectedCandidates)
+//    @Previewable @State var isEditing = true
+//    @Previewable @State var selectedCandidates = [Candidate]()
+//    CandidateRowView(candidate: Candidate(id: "123", firstName: "Jean Michel", isFavorite: false, email: "jp@gmail.com", lastName: "Papin"), isEditing: $isEditing, selectedCandidates: $selectedCandidates)
 }

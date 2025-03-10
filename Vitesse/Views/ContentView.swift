@@ -18,7 +18,7 @@ struct ContentView: View {
                     CandidatesView()
                 } else {
                     LoginView(viewModel: viewModel.authViewModel)
-                }
+                } 
             }
             
         }
