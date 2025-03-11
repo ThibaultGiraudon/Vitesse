@@ -35,7 +35,11 @@ struct CandidatesView: View {
             }
             .padding(3)
             List(filteredCandidate, id: \.id) { candidate in
-                CandidateRowView(viewModel: viewModel, candidate: candidate, isEditing: $isEditing, selectedCandidates: $selectedCandidates)
+                NavigationLink {
+                    CandidateDetailsView(viewModel: viewModel, candidate: candidate)
+                } label: {
+                    CandidateRowView(viewModel: viewModel, candidate: candidate, isEditing: $isEditing, selectedCandidates: $selectedCandidates)
+                }
             }
             .listStyle(.plain)
         }

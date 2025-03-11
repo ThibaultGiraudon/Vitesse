@@ -13,6 +13,7 @@ extension API {
         case createCandidate(email: String, note: String?, linkedinURL: String?, firstName: String, lastName: String, phone: String)
         case delete(id: String)
         case favorite(id: String)
+        case update(candidate: Candidate)
         
         var path: String {
             switch self {
@@ -27,21 +28,25 @@ extension API {
                     return "/candidate/\(id)/"
                 case .favorite(let id):
                     return "/candidate/\(id)/favorite"
+                case .update(let candidate):
+                    return "/candidate/\(candidate.id)/"
             }
         }
-        
+
         var authorization: API.Authorization { .user }
-        
+
         var method: API.Method {
             switch self {
                 case .candidate:
-                        .get
+                    .get
                 case .createCandidate:
-                        .post
+                    .post
                 case .delete:
-                        .delete
+                    .delete
                 case .favorite:
-                        .post
+                    .post
+                case .update:
+                    .put
             }
         }
         
@@ -56,6 +61,9 @@ extension API {
                     return nil
                 case .favorite:
                     return nil
+                case .update(let candidate):
+                    let data = ["email": candidate.email, "note": candidate.note, "linkedinURL": candidate.linkedinURL, "firstName": candidate.firstName, "lastName": candidate.lastName, "phone": candidate.phone]
+                    return try? JSONSerialization.data(withJSONObject: data)
             }
         }
         
@@ -80,7 +88,7 @@ extension API {
             
             return request
         }
-        
-        
+  
+
     }
 }

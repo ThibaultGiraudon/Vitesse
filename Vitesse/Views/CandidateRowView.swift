@@ -35,8 +35,7 @@ struct CandidateRowView: View {
             Spacer()
             Image(systemName: candidate.isFavorite ? "star.fill" : "star")
                 .onTapGesture {
-                    print(viewModel.candidates)
-                    viewModel.favorite(candidate: candidate)
+                    viewModel.setFavorite(for: candidate)
                 }
         }
         .font(.title)
