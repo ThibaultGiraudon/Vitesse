@@ -9,10 +9,10 @@ import Foundation
 
 class CandidatesViewModel: ObservableObject {
     @Published var candidates: [Candidate] = [
-        Candidate(id: UUID().uuidString, firstName: "Jean Pierre", isFavorite: true, email: "jp@gmail.com", lastName: "Paul"),
-        Candidate(id: UUID().uuidString, firstName: "Jean Michel", isFavorite: false, email: "jm@gmail.com", lastName: "Paul"),
-        Candidate(id: UUID().uuidString, firstName: "Jean Pierre", isFavorite: true, email: "jp@gmail.com", lastName: "Arak"),
-        Candidate(id: UUID().uuidString, firstName: "Jean Michel", isFavorite: false, email: "jm@gmail.com", lastName: "Zazy"),
+        Candidate(id: UUID().uuidString, firstName: "Jean Pierre", lastName: "Pierre", email: "jp@gmail.com", phone: "06 01 01 01 01", isFavorite: false),
+        Candidate(id: UUID().uuidString, firstName: "Jean Michel", lastName: "Pierre", email: "jm@gmail.com", phone: "06 02 02 02 02", isFavorite: false),
+        Candidate(id: UUID().uuidString, firstName: "Jean Pierre", lastName: "Michel", email: "jp@gmail.com", phone: "06 03 03 03 03", isFavorite: true),
+        Candidate(id: UUID().uuidString, firstName: "Jean Michel", lastName: "Michel", email: "jm@gmail.com", phone: "06 04 04 04 04", isFavorite: true),
     ]
     
     func fetchCandidates() {
@@ -20,7 +20,6 @@ class CandidatesViewModel: ObservableObject {
             do {
                 candidates = try await API.shared.call(endPoint: API.CandidatesEndPoints.candidate(id: nil))
                 
-                print(candidates)
             } catch {
                 print(error.localizedDescription)
             }
@@ -30,10 +29,7 @@ class CandidatesViewModel: ObservableObject {
     func createCandidate() {
         Task {
             do {
-                let candidate = try await API.shared.call(endPoint: API.CandidatesEndPoints.createCandidate(email: "t@gmail.com", note: nil, linkedinURL: nil, firstName: "Tibo", lastName: "Giraudon", phone: "06 85 99 86 66")) as Candidate
-                
-                print("Successfuly created new candidate")
-                print(candidate)
+                let candidate = try await API.shared.call(endPoint: API.CandidatesEndPoints.createCandidate(email: "t@gmail.com", note: nil, linkedinURL: nil, firstName: "Tibo", lastName: "Giraudon", phone: "06 05 05 05 05")) as Candidate
             } catch {
                 print(error.localizedDescription)
             }
@@ -55,9 +51,7 @@ class CandidatesViewModel: ObservableObject {
     func deleteCandidate(_ candidate: Candidate) {
         Task {
             do {
-                print("deleting \(candidate.firstName)")
                 try await API.shared.call(endPoint: API.CandidatesEndPoints.delete(id: candidate.id))
-                print("successfuly deleted \(candidate.firstName)")
                 fetchCandidates()
             } catch {
                 print(error.localizedDescription)

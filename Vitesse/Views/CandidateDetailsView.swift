@@ -8,29 +8,29 @@
 import SwiftUI
 
 struct CandidateDetailsView: View {
-    var viewModel: CandidatesViewModel
-    @State var candidate: Candidate
+    @StateObject var viewModel: CandidatViewModel
     @State private var showEditSheet = false
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 20) {
                 HStack {
-                    Text(candidate.firstName + " " + candidate.lastName.prefix(1) + ".")
-                        .fontWeight(.bold)
+                    Text(viewModel.candidate.fullName)
                     Spacer()
-                    Image(systemName: candidate.isFavorite ? "star.fill" : "star")
+                    Image(systemName: viewModel.candidate.isFavorite ? "star.fill" : "star")
                         .onTapGesture {
-                            viewModel.setFavorite(for: candidate)
+                            Task {
+                                await viewModel.setFavorite()
+                            }
                         }
                 }
                 .font(.largeTitle)
                 .padding()
                 Group {
-                    row("Phone", info: candidate.phone)
-                    row("Email", info: candidate.email)
+                    row("Phone", info: viewModel.candidate.phone)
+                    row("Email", info: viewModel.candidate.email)
                     HStack {
                         Text("LinkedIn")
-                        if let linkedinURL = candidate.linkedinURL, let url = URL(string: linkedinURL) {
+                        if let linkedinURL = viewModel.candidate.linkedinURL, let url = URL(string: linkedinURL) {
                             Link(destination: url) {
                                 Text("Go on LinkedIn")
                             }
@@ -39,8 +39,8 @@ struct CandidateDetailsView: View {
                         }
                     }
                     Text("Note")
-                    Text(candidate.note ?? "N/A")
-                        .font(.virgil)
+                    Text(viewModel.candidate.note ?? "N/A")
+                        .font(.virgil())
                         .padding(.horizontal, 2)
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, 30)
@@ -57,17 +57,15 @@ struct CandidateDetailsView: View {
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
                 Button("Edit") {
-                    print("taped")
                     showEditSheet = true
                 }
+                .font(.virgil())
+                .foregroundStyle(.black)
             }
         }
         .sheet(isPresented: $showEditSheet) {
             NavigationStack {
-                EditCandidateView(viewModel: EditViewModel(candidate: candidate, completion: { response in
-                    viewModel.update(candidate: response)
-                    candidate = response
-                }))
+                EditCandidateView(viewModel: viewModel)
             }
         }
     }
@@ -84,8 +82,7 @@ struct CandidateDetailsView: View {
 #Preview {
     NavigationStack {
         CandidateDetailsView(
-            viewModel: CandidatesViewModel(),
-            candidate: Candidate(id: UUID().uuidString, firstName: "Tibo", isFavorite: true, email: "tibo@gmail.com", lastName: "Giraudon")
+            viewModel: CandidatViewModel(candidate: Candidate(id: UUID().uuidString, firstName: "Tibo", lastName: "Giraudon", email: "tibo@gmail.com", phone: "Giraudon", isFavorite: false))
         )
     }
 }

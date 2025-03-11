@@ -10,7 +10,7 @@ import Foundation
 extension API {
     struct Constants {
         static var scheme = "http"
-        static var host = "127.0.0.1"
+        static var host = "192.168.1.59"
         static var port = 8080
     }
 }

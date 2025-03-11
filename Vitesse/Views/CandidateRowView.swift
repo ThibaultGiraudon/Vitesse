@@ -15,41 +15,35 @@ struct CandidateRowView: View {
     var body: some View {
         HStack {
             if isEditing {
-                Button {
-                    if let index = selectedCandidates.firstIndex(where: { $0.id == candidate.id }) {
-                        selectedCandidates.remove(at: index)
-                    }
-                    else {
-                        selectedCandidates.append(candidate)
-                    }
-                } label: {
-                    if selectedCandidates.contains(where: { $0.id == candidate.id }) {
-                        Image(systemName: "checkmark.circle.fill")
-                    }
-                    else {
-                        Image(systemName: "circle")
-                    }
+                if selectedCandidates.contains(where: { $0.id == candidate.id }) {
+                    Image(systemName: "checkmark.circle.fill")
+                }
+                else {
+                    Image(systemName: "circle")
                 }
             }
-            Text(candidate.firstName + " " + candidate.lastName.prefix(1) + ".")
+            Text(candidate.fullName)
             Spacer()
             Image(systemName: candidate.isFavorite ? "star.fill" : "star")
-                .onTapGesture {
-                    viewModel.setFavorite(for: candidate)
-                }
         }
-        .font(.title)
+        .font(.virgil())
         .padding()
         .background {
             Rectangle()
                 .stroke()
         }
-        .listRowSeparator(.hidden)
+        .onTapGesture {
+            if let index = selectedCandidates.firstIndex(where: { $0.id == candidate.id }) {
+                selectedCandidates.remove(at: index)
+            } else {
+                selectedCandidates.append(candidate)
+            }
+        }
     }
 }
 
 #Preview {
-//    @Previewable @State var isEditing = true
-//    @Previewable @State var selectedCandidates = [Candidate]()
-//    CandidateRowView(candidate: Candidate(id: "123", firstName: "Jean Michel", isFavorite: false, email: "jp@gmail.com", lastName: "Papin"), isEditing: $isEditing, selectedCandidates: $selectedCandidates)
+    @Previewable @State var isEditing = true
+    @Previewable @State var selectedCandidates = [Candidate]()
+    CandidateRowView(viewModel: CandidatesViewModel(), candidate: Candidate(id: "123", firstName: "Jean Michel", lastName: "Pierre", email: "jp@gmail.com", phone: "06 06 06 06 06", isFavorite: true), isEditing: $isEditing, selectedCandidates: $selectedCandidates)
 }

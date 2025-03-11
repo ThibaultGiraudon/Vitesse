@@ -8,12 +8,20 @@
 import Foundation
 
 struct Candidate: Codable {
-    var phone: String?
-    var note: String?
     var id: String
     var firstName: String
-    var linkedinURL: String?
-    var isFavorite: Bool
-    var email: String
     var lastName: String
+    var email: String
+    var phone: String?
+    var linkedinURL: String?
+    var note: String?
+    var isFavorite: Bool
+    var fullName: String {
+        firstName + " " + lastName.prefix(1).capitalized + "."
+    }
+    
+    enum CodingKeys: CodingKey {
+        case id, firstName, lastName, email, phone, linkedinURL, note, isFavorite
+    }
+    
 }

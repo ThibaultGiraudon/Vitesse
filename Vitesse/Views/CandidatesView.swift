@@ -24,48 +24,25 @@ struct CandidatesView: View {
     var body: some View {
         VStack {
             HStack {
-                Image(systemName: "magnifyingglass")
-                TextField("Search", text: $searchText)
-            }
-            .font(.title)
-            .padding(3)
-            .background {
-                Rectangle()
-                    .stroke()
-            }
-            .padding(3)
-            List(filteredCandidate, id: \.id) { candidate in
-                NavigationLink {
-                    CandidateDetailsView(viewModel: viewModel, candidate: candidate)
-                } label: {
-                    CandidateRowView(viewModel: viewModel, candidate: candidate, isEditing: $isEditing, selectedCandidates: $selectedCandidates)
-                }
-            }
-            .listStyle(.plain)
-        }
-        .onAppear {
-            viewModel.fetchCandidates()
-        }
-        .navigationTitle("Candidats")
-        .navigationBarTitleDisplayMode(.inline)
-        .toolbar {
-            ToolbarItem(placement: .topBarLeading) {
                 Button(isEditing ? "Cancel" : "Edit") {
-                    isEditing.toggle()
+                    withAnimation {
+                        isEditing.toggle()
+                    }
                 }
-            }
-            if isEditing {
-                ToolbarItem(placement: .topBarTrailing) {
+                Spacer()
+                Text("Candidats")
+                Spacer()
+                if isEditing {
                     Button {
                         viewModel.deleteCandidates(selectedCandidates: selectedCandidates)
                         selectedCandidates = []
-                        isEditing.toggle()
+                        withAnimation {
+                            isEditing.toggle()
+                        }
                     } label: {
                         Text("Delete")
                     }
-                }
-            } else {
-                ToolbarItem(placement: .topBarTrailing) {
+                } else {
                     Button {
                         showFav.toggle()
                     } label: {
@@ -73,7 +50,44 @@ struct CandidatesView: View {
                     }
                 }
             }
+            .padding(.horizontal)
+            .foregroundStyle(.black)
+            HStack {
+                Image(systemName: "magnifyingglass")
+                TextField("Search", text: $searchText)
+            }
+            .font(.virgil(size: 28))
+            .padding(3)
+            .background {
+                Rectangle()
+                    .stroke()
+            }
+            .padding(3)
+            ScrollView {
+                ForEach(filteredCandidate, id: \.id) { candidate in
+                    ZStack {
+                        CandidateRowView(viewModel: viewModel, candidate: candidate, isEditing: $isEditing, selectedCandidates: $selectedCandidates)
+                            .foregroundStyle(.black)
+                            .padding(.vertical, 5)
+                        
+                        if !isEditing {
+                            NavigationLink {
+                                CandidateDetailsView(viewModel: CandidatViewModel(candidate: candidate))
+                            } label: {
+                                CandidateRowView(viewModel: viewModel, candidate: candidate, isEditing: $isEditing, selectedCandidates: $selectedCandidates)
+                                    .foregroundStyle(.black)
+                                    .padding(.vertical, 5)
+                                    .opacity(0)
+                            }
+                        }
+                    }
+                }
+            }
         }
+        .onAppear {
+            viewModel.fetchCandidates()
+        }
+        .font(.virgil())
     }
 }
 

@@ -12,43 +12,56 @@ struct LoginView: View {
     var body: some View {
         VStack {
             Text("Login")
-                .font(.largeTitle)
+                .font(.cascadia(size: 50))
             VStack(alignment: .leading) {
                 Text("Email/Username")
                 TextField("", text: $viewModel.email)
-                    .textFieldStyle(.roundedBorder)
+                    .padding(8)
+                    .background {
+                        RoundedRectangle(cornerRadius: 2)
+                            .stroke()
+                    }
                     .autocapitalization(.none)
                     .keyboardType(.emailAddress)
                 Text("Password")
                 SecureField("", text: $viewModel.password)
-                    .textFieldStyle(.roundedBorder)
+                    .padding(8)
+                    .background {
+                        RoundedRectangle(cornerRadius: 2)
+                            .stroke()
+                    }
                 Button("Forgot password?") {}
+                    .font(.cascadia(size: 12))
+                    .foregroundStyle(.gray)
             }
             .padding(30)
             Button {
                 viewModel.login()
-                print(User.shared.token)
             } label: {
                 Text("Sign In")
-                    .foregroundStyle(.blue)
+                    .frame(maxWidth: 100)
                     .padding()
                     .background {
                         Rectangle()
                             .stroke()
                     }
+                    .foregroundStyle(.black)
             }
+            .padding(.bottom)
             NavigationLink {
                 RegisterView(viewModel: viewModel)
             } label: {
                 Text("Register")
-                    .foregroundStyle(.blue)
+                    .frame(maxWidth: 100)
                     .padding()
                     .background {
                         Rectangle()
                             .stroke()
                     }
+                    .foregroundStyle(.black)
             }
         }
+        .font(.cascadia())
         .onAppear {
             viewModel.email = "admin@vitesse.com"
             viewModel.password = "test123"

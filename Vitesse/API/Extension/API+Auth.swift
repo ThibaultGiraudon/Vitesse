@@ -60,7 +60,6 @@ extension API {
             guard let url = components.url else {
                 return nil
             }
-            print(url)
             var request = URLRequest(url: url)
             request.httpBody = body
             request.httpMethod = method.rawValue

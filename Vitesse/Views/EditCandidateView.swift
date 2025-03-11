@@ -8,17 +8,20 @@
 import SwiftUI
 
 struct EditCandidateView: View {
-    @StateObject var viewModel: EditViewModel
+    @StateObject var viewModel: CandidatViewModel
     @Environment(\.dismiss) var dismiss
     var body: some View {
         ScrollView(showsIndicators: false) {
             VStack(alignment: .leading) {
-                Text(viewModel.title)
+                Text(viewModel.candidate.fullName)
                     .font(.cascadia(size: 35))
                     .padding(.bottom, 20)
                 Group {
                     Text("Phone")
-                    TextField("", text: $viewModel.phone)
+                    TextField("", text: Binding(
+                        get: { viewModel.candidate.phone ?? "" },
+                        set: { viewModel.candidate.phone = $0.isEmpty ? nil : $0}
+                    ))
                         .padding(5)
                         .background {
                             Rectangle()
@@ -26,7 +29,7 @@ struct EditCandidateView: View {
                         }
                         .keyboardType(.phonePad)
                     Text("Email")
-                    TextField("", text: $viewModel.email)
+                    TextField("", text: $viewModel.candidate.email)
                         .padding(5)
                         .background {
                             Rectangle()
@@ -34,14 +37,20 @@ struct EditCandidateView: View {
                         }
                         .keyboardType(.emailAddress)
                     Text("LinkedIn")
-                    TextField("", text: $viewModel.linkedinURL)
+                    TextField("", text: Binding(
+                        get: { viewModel.candidate.linkedinURL ?? "" },
+                        set: { viewModel.candidate.linkedinURL = $0.isEmpty ? nil : $0 }
+                    ))
                         .padding(5)
                         .background {
                             Rectangle()
                                 .stroke()
                         }
                     Text("Note")
-                    TextField("", text: $viewModel.note, axis: .vertical)
+                    TextField("", text: Binding(
+                        get: { viewModel.candidate.note ?? "" },
+                        set: { viewModel.candidate.note = $0.isEmpty ? nil : $0}),
+                              axis: .vertical)
                         .lineLimit(5...10)
                         .multilineTextAlignment(.leading)
                         .padding(10)
@@ -58,6 +67,8 @@ struct EditCandidateView: View {
                     Button("Cancel") {
                         dismiss()
                     }
+                    .font(.virgil())
+                    .foregroundStyle(.black)
                 }
                 ToolbarItem(placement: .topBarTrailing) {
                     Button("Done") {
@@ -66,6 +77,8 @@ struct EditCandidateView: View {
                             dismiss()
                         }
                     }
+                    .font(.virgil())
+                    .foregroundStyle(.black)
                 }
             }
         }
@@ -73,5 +86,7 @@ struct EditCandidateView: View {
 }
 
 #Preview {
-    EditCandidateView(viewModel: EditViewModel(candidate: Candidate(id: UUID().uuidString, firstName: "Tibo", isFavorite: true, email: "tibo@gmail.com", lastName: "Giraudon")) { _ in })
+    NavigationStack {
+        EditCandidateView(viewModel: CandidatViewModel(candidate: Candidate(id: UUID().uuidString, firstName: "Tibo", lastName: "Giraudon", email: "tibo@gmail.com", phone: "06 12 12 12 12", isFavorite: false)))
+    }
 }

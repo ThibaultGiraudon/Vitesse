@@ -9,7 +9,9 @@ import Foundation
 import SwiftUI
 
 extension Font {
-    static let virgil = Font.custom("VirgilGS", size: 20)
+    static func virgil(size: CGFloat = 20) -> Font? {
+        return Font.custom("VirgilGS", size: size)
+    }
     
     static func cascadia(size: CGFloat = 20) -> Font? {
         return Font.custom("CascadiaCode", size: size)

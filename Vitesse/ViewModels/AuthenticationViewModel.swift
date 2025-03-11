@@ -26,7 +26,6 @@ class AuthenticationViewModel: ObservableObject {
             do {
                 let response: Token = try await API.shared.call(endPoint: API.AuthEndPoints.auth(email: email, password: password))
                 
-                print(response.token)
                 onLogginSucceed(response)
             } catch {
                 print(error.localizedDescription)

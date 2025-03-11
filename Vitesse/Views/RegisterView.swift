@@ -12,21 +12,33 @@ struct RegisterView: View {
     var body: some View {
         VStack {
             Text("Register")
-                .font(.largeTitle)
+                .font(.cascadia(size: 50))
             VStack(alignment: .leading) {
                 Text("First Name")
                 TextField("", text: $viewModel.firstName)
-                    .textFieldStyle(.roundedBorder)
+                    .padding(8)
+                    .background {
+                        RoundedRectangle(cornerRadius: 2)
+                            .stroke()
+                    }
                     .autocorrectionDisabled()
                 
                 Text("Last Name")
                 TextField("", text: $viewModel.lastName)
-                    .textFieldStyle(.roundedBorder)
+                    .padding(8)
+                    .background {
+                        RoundedRectangle(cornerRadius: 2)
+                            .stroke()
+                    }
                     .autocorrectionDisabled()
                 
                 Text("Email")
                 TextField("", text: $viewModel.email)
-                    .textFieldStyle(.roundedBorder)
+                    .padding(8)
+                    .background {
+                        RoundedRectangle(cornerRadius: 2)
+                            .stroke()
+                    }
                     .autocorrectionDisabled()
                     .keyboardType(.emailAddress)
                     .autocapitalization(.none)
@@ -38,11 +50,19 @@ struct RegisterView: View {
                 
                 Text("Password")
                 SecureField("", text: $viewModel.password)
-                    .textFieldStyle(.roundedBorder)
+                    .padding(8)
+                    .background {
+                        RoundedRectangle(cornerRadius: 2)
+                            .stroke()
+                    }
                     .autocorrectionDisabled()
                 Text("Confirm Password")
                 SecureField("", text: $viewModel.confirmPassword)
-                    .textFieldStyle(.roundedBorder)
+                    .padding(8)
+                    .background {
+                        RoundedRectangle(cornerRadius: 2)
+                            .stroke()
+                    }
                     .autocorrectionDisabled()
             }
             .padding(20)
@@ -50,13 +70,16 @@ struct RegisterView: View {
                 viewModel.register()
             } label: {
                 Text("Create")
+                    .frame(maxWidth: 100)
                     .padding()
                     .background {
                         Rectangle()
                             .stroke()
                     }
+                    .foregroundStyle(.black)
             }
         }
+        .font(.cascadia())
     }
 }
 
