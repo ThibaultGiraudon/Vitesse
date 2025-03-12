@@ -9,6 +9,7 @@ import SwiftUI
 
 struct LoginView: View {
     @ObservedObject var viewModel: AuthenticationViewModel
+    @FocusState var focused
     var body: some View {
         VStack {
             Text("Login")
@@ -23,6 +24,8 @@ struct LoginView: View {
                     }
                     .autocapitalization(.none)
                     .keyboardType(.emailAddress)
+                    .focused($focused)
+                
                 Text("Password")
                 SecureField("", text: $viewModel.password)
                     .padding(8)
@@ -30,12 +33,21 @@ struct LoginView: View {
                         RoundedRectangle(cornerRadius: 2)
                             .stroke()
                     }
+                    .focused($focused)
+                
                 Button("Forgot password?") {}
                     .font(.cascadia(size: 12))
                     .foregroundStyle(.gray)
+                
+                if !viewModel.transferedMessage.isEmpty {
+                    Text(viewModel.transferedMessage)
+                        .foregroundStyle(.red)
+                }
             }
             .padding(30)
+            
             Button {
+                focused = false
                 viewModel.login()
             } label: {
                 Text("Sign In")
@@ -48,6 +60,7 @@ struct LoginView: View {
                     .foregroundStyle(.black)
             }
             .padding(.bottom)
+            
             NavigationLink {
                 RegisterView(viewModel: viewModel)
             } label: {
@@ -64,7 +77,12 @@ struct LoginView: View {
         .font(.cascadia())
         .onAppear {
             viewModel.email = "admin@vitesse.com"
-            viewModel.password = "test123"
+            viewModel.password = "tes"
+        }
+        .alert(viewModel.alertTitle, isPresented: $viewModel.showAlert) {
+            Button("OK") {
+                viewModel.alertTitle = ""
+            }
         }
     }
 }

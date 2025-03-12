@@ -8,7 +8,7 @@
 import Foundation
 
 extension API {
-    enum Error: Swift.Error, LocalizedError {
+    enum Error: Swift.Error, LocalizedError, Hashable {
         case malformed
         case badRequest
         case unauthorized
@@ -16,6 +16,7 @@ extension API {
         case responseError
         case internalServerError
         case uniqueConstraint
+        case custom(reason: String)
         
         var errorDescription: String? {
             switch self {
@@ -33,8 +34,15 @@ extension API {
                     "We are encountering a problem with our server. Please try aigain later."
                 case .uniqueConstraint:
                     "This email is already taken."
+                case .custom(let reason):
+                    reason
             }
         }
-        
     }
+    
+    struct APIError: Codable {
+        let reason: String
+        let error: Bool
+    }
+    
 }

@@ -14,28 +14,44 @@ class CandidatesViewModel: ObservableObject {
         Candidate(id: UUID().uuidString, firstName: "Jean Pierre", lastName: "Michel", email: "jp@gmail.com", phone: "06 03 03 03 03", isFavorite: true),
         Candidate(id: UUID().uuidString, firstName: "Jean Michel", lastName: "Michel", email: "jm@gmail.com", phone: "06 04 04 04 04", isFavorite: true),
     ]
+    @Published var alertTitle = ""
+    @Published var showAlert = false
+    @Published var searchText = ""
+    @Published var showFavorites = false
+    var filteredCandidates: [Candidate] {
+        candidates.filter { candidate in
+            let matchesSearch = searchText.isEmpty || candidate.firstName.contains(searchText) || candidate.lastName.contains(searchText)
+            let matchesFav = !showFavorites || candidate.isFavorite
+            return matchesSearch && matchesFav
+        }
+    }
     
+    @MainActor
     func fetchCandidates() {
         Task {
             do {
                 candidates = try await API.shared.call(endPoint: API.CandidatesEndPoints.candidate(id: nil))
                 
             } catch {
-                print(error.localizedDescription)
+                alertTitle = error.localizedDescription
+                showAlert = true
             }
         }
     }
     
+    @MainActor
     func createCandidate() {
         Task {
             do {
-                let candidate = try await API.shared.call(endPoint: API.CandidatesEndPoints.createCandidate(email: "t@gmail.com", note: nil, linkedinURL: nil, firstName: "Tibo", lastName: "Giraudon", phone: "06 05 05 05 05")) as Candidate
+                let _ = try await API.shared.call(endPoint: API.CandidatesEndPoints.createCandidate(email: "t@gmail.com", note: nil, linkedinURL: nil, firstName: "Tibo", lastName: "Giraudon", phone: "06 05 05 05 05")) as Candidate
             } catch {
-                print(error.localizedDescription)
+                alertTitle = error.localizedDescription
+                showAlert = true
             }
         }
     }
     
+    @MainActor
     func deleteCandidates(selectedCandidates: [Candidate]) {
         Task {
             selectedCandidates.forEach { candidate in
@@ -48,17 +64,20 @@ class CandidatesViewModel: ObservableObject {
         }
     }
     
+    @MainActor
     func deleteCandidate(_ candidate: Candidate) {
         Task {
             do {
                 try await API.shared.call(endPoint: API.CandidatesEndPoints.delete(id: candidate.id))
                 fetchCandidates()
             } catch {
-                print(error.localizedDescription)
+                alertTitle = error.localizedDescription
+                showAlert = true
             }
         }
     }
     
+    @MainActor
     func setFavorite(for candidate: Candidate) {
         Task {
             do {
@@ -70,15 +89,9 @@ class CandidatesViewModel: ObservableObject {
                 candidates[index] = reponse
                 
             } catch {
-                print(error.localizedDescription)
+                alertTitle = error.localizedDescription
+                showAlert = true
             }
         }
-    }
-    
-    func update(candidate: Candidate) {
-        if let index = candidates.firstIndex(where: { $0.id == candidate.id }) {
-            candidates[index] = candidate
-        }
-    }
-    
+    }    
 }

@@ -21,20 +21,27 @@ class API {
     
     func call<T: Decodable>(endPoint: EndPoint) async throws -> T {
         guard let request = endPoint.request else {
-            print("request")
-             throw error
+            throw Error.badRequest
         }
         
         let (data, response) = try await session.data(for: request)
         
         guard let httpResponse = response as? HTTPURLResponse else {
-            print("response")
-            throw error
+            throw Error.responseError
         }
         
         guard httpResponse.statusCode == 200 else {
-            print(httpResponse.statusCode)
-            throw error
+            let decoded = try JSONDecoder().decode(APIError.self, from: data)
+            switch httpResponse.statusCode {
+                case 401:
+                    throw Error.custom(reason: decoded.reason)
+                case 404:
+                    throw Error.notFound
+                case 500:
+                    throw API.Error.uniqueConstraint
+                default:
+                    throw Error.internalServerError
+            }
         }
         
         let decoded = try JSONDecoder().decode(T.self, from: data)
@@ -44,23 +51,27 @@ class API {
 
     func call(endPoint: EndPoint) async throws {
         guard let request = endPoint.request else {
-            print("request")
-             throw error
+            throw Error.badRequest
         }
         
-        let (_, response) = try await session.data(for: request)
+        let (data, response) = try await session.data(for: request)
         
         guard let httpResponse = response as? HTTPURLResponse else {
-            print("response")
-            throw error
+            throw Error.responseError
         }
         
-        guard httpResponse.statusCode == 200 || httpResponse.statusCode == 201 else {
+        guard httpResponse.statusCode == 200 else {
+            print(httpResponse.statusCode)
+            let decoded = try JSONDecoder().decode(APIError.self, from: data)
             switch httpResponse.statusCode {
+                case 401:
+                    throw Error.custom(reason: decoded.reason)
+                case 404:
+                    throw Error.notFound
                 case 500:
                     throw API.Error.uniqueConstraint
                 default:
-                    throw error
+                    throw Error.internalServerError
             }
         }
     }

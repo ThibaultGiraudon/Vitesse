@@ -9,17 +9,9 @@ import SwiftUI
 
 struct CandidatesView: View {
     @ObservedObject var viewModel = CandidatesViewModel()
-    @State private var searchText = "" // move in VM
-    var filteredCandidate: [Candidate] {
-        viewModel.candidates.filter { candidate in
-            let matchesSearch = searchText.isEmpty || candidate.firstName.contains(searchText)
-            let matchesFav = !showFav || candidate.isFavorite
-            return matchesSearch && matchesFav
-        }
-    }
     @State private var isEditing = false
     @State private var selectedCandidates = [Candidate]()
-    @State private var showFav = false
+    @State private var showDeleteConfirmation = false
     
     var body: some View {
         VStack {
@@ -34,19 +26,17 @@ struct CandidatesView: View {
                 Spacer()
                 if isEditing {
                     Button {
-                        viewModel.deleteCandidates(selectedCandidates: selectedCandidates)
-                        selectedCandidates = []
-                        withAnimation {
-                            isEditing.toggle()
-                        }
+                        showDeleteConfirmation = true
                     } label: {
                         Text("Delete")
                     }
+                    .disabled(selectedCandidates.isEmpty)
+                    .foregroundStyle(selectedCandidates.isEmpty ? .gray : .black)
                 } else {
                     Button {
-                        showFav.toggle()
+                        viewModel.showFavorites.toggle()
                     } label: {
-                        Image(systemName: showFav ? "star.fill" : "star")
+                        Image(systemName: viewModel.showFavorites ? "star.fill" : "star")
                     }
                 }
             }
@@ -54,7 +44,7 @@ struct CandidatesView: View {
             .foregroundStyle(.black)
             HStack {
                 Image(systemName: "magnifyingglass")
-                TextField("Search", text: $searchText)
+                TextField("Search", text: $viewModel.searchText)
             }
             .font(.virgil(size: 28))
             .padding(3)
@@ -64,7 +54,7 @@ struct CandidatesView: View {
             }
             .padding(3)
             ScrollView {
-                ForEach(filteredCandidate, id: \.id) { candidate in
+                ForEach(viewModel.filteredCandidates, id: \.id) { candidate in
                     ZStack {
                         CandidateRowView(viewModel: viewModel, candidate: candidate, isEditing: $isEditing, selectedCandidates: $selectedCandidates)
                             .foregroundStyle(.black)
@@ -72,7 +62,7 @@ struct CandidatesView: View {
                         
                         if !isEditing {
                             NavigationLink {
-                                CandidateDetailsView(viewModel: CandidatViewModel(candidate: candidate))
+                                CandidateDetailsView(viewModel: CandidateViewModel(candidate: candidate))
                             } label: {
                                 CandidateRowView(viewModel: viewModel, candidate: candidate, isEditing: $isEditing, selectedCandidates: $selectedCandidates)
                                     .foregroundStyle(.black)
@@ -88,6 +78,26 @@ struct CandidatesView: View {
             viewModel.fetchCandidates()
         }
         .font(.virgil())
+        .alert(viewModel.alertTitle, isPresented: $viewModel.showAlert) {
+            
+        }
+        .alert("Warning" , isPresented: $showDeleteConfirmation) {
+            Button("Delete", role: .destructive) {
+                viewModel.deleteCandidates(selectedCandidates: selectedCandidates)
+                selectedCandidates = []
+                withAnimation {
+                    isEditing.toggle()
+                }
+            }
+            Button("Cancel", role: .cancel) {
+                selectedCandidates = []
+                withAnimation {
+                    isEditing.toggle()
+                }
+            }
+        } message: {
+            Text("Are you sure you want to delete \(selectedCandidates.count) candidates?")
+        }
     }
 }
 

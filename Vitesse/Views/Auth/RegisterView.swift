@@ -9,6 +9,8 @@ import SwiftUI
 
 struct RegisterView: View {
     @ObservedObject var viewModel: AuthenticationViewModel
+    @Environment(\.dismiss) var dismiss
+    @FocusState var focused
     var body: some View {
         VStack {
             Text("Register")
@@ -22,6 +24,7 @@ struct RegisterView: View {
                             .stroke()
                     }
                     .autocorrectionDisabled()
+                    .focused($focused)
                 
                 Text("Last Name")
                 TextField("", text: $viewModel.lastName)
@@ -31,6 +34,7 @@ struct RegisterView: View {
                             .stroke()
                     }
                     .autocorrectionDisabled()
+                    .focused($focused)
                 
                 Text("Email")
                 TextField("", text: $viewModel.email)
@@ -42,11 +46,8 @@ struct RegisterView: View {
                     .autocorrectionDisabled()
                     .keyboardType(.emailAddress)
                     .autocapitalization(.none)
+                    .focused($focused)
                 
-                if let errorMessage = viewModel.errorMessage {
-                    Text(errorMessage)
-                        .foregroundStyle(.red)
-                }
                 
                 Text("Password")
                 SecureField("", text: $viewModel.password)
@@ -56,6 +57,8 @@ struct RegisterView: View {
                             .stroke()
                     }
                     .autocorrectionDisabled()
+                    .focused($focused)
+                
                 Text("Confirm Password")
                 SecureField("", text: $viewModel.confirmPassword)
                     .padding(8)
@@ -64,10 +67,18 @@ struct RegisterView: View {
                             .stroke()
                     }
                     .autocorrectionDisabled()
+                    .focused($focused)
+                
+                if !viewModel.transferedMessage.isEmpty {
+                    Text(viewModel.transferedMessage)
+                        .foregroundStyle(.red)
+                }
             }
             .padding(20)
+            Spacer()
             Button {
                 viewModel.register()
+                focused = false
             } label: {
                 Text("Create")
                     .frame(maxWidth: 100)
@@ -76,13 +87,35 @@ struct RegisterView: View {
                         Rectangle()
                             .stroke()
                     }
-                    .foregroundStyle(.black)
+                    .foregroundStyle(viewModel.shouldDisable ? .gray : .black)
+            }
+            .disabled(viewModel.shouldDisable)
+            Spacer()
+        }
+        .toolbar {
+            ToolbarItem(placement: .topBarLeading) {
+                HStack {
+                    Button {
+                        dismiss()
+                    } label: {
+                        Image("backButton")
+                        Spacer()
+                    }
+                }
             }
         }
         .font(.cascadia())
+        .alert(viewModel.alertTitle, isPresented: $viewModel.showAlert) {
+            Button("OK") {
+                viewModel.alertTitle = ""
+            }
+        }
+        .navigationBarBackButtonHidden(true)
     }
 }
 
 #Preview {
-    RegisterView(viewModel: AuthenticationViewModel { _ in })
+    NavigationStack {
+        RegisterView(viewModel: AuthenticationViewModel { _ in })
+    }
 }
