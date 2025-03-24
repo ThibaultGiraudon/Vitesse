@@ -12,6 +12,7 @@ struct CandidatesView: View {
     @State private var isEditing = false
     @State private var selectedCandidates = [Candidate]()
     @State private var showDeleteConfirmation = false
+    @State private var showAddCandidateSheet: Bool = false
     
     var body: some View {
         VStack {
@@ -24,6 +25,11 @@ struct CandidatesView: View {
                 Spacer()
                 Text("Candidats")
                 Spacer()
+                Button {
+                    showAddCandidateSheet.toggle()
+                } label: {
+                    Image(systemName: "plus")
+                }
                 if isEditing {
                     Button {
                         showDeleteConfirmation = true
@@ -77,6 +83,11 @@ struct CandidatesView: View {
         .onAppear {
             viewModel.fetchCandidates()
         }
+        .sheet(isPresented: $showAddCandidateSheet, content: {
+            NavigationStack {
+                AddCandidateView(viewModel: viewModel)
+            }
+        })
         .font(.virgil())
         .alert(viewModel.alertTitle, isPresented: $viewModel.showAlert) {
             

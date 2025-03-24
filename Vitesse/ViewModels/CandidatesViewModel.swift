@@ -18,6 +18,7 @@ class CandidatesViewModel: ObservableObject {
     @Published var showAlert = false
     @Published var searchText = ""
     @Published var showFavorites = false
+    @Published var transferedMessage = ""
     var filteredCandidates: [Candidate] {
         candidates.filter { candidate in
             let matchesSearch = searchText.isEmpty || candidate.firstName.contains(searchText) || candidate.lastName.contains(searchText)
@@ -40,10 +41,27 @@ class CandidatesViewModel: ObservableObject {
     }
     
     @MainActor
-    func createCandidate() {
+    func createCandidate(_ candidate: Candidate) {
         Task {
+            transferedMessage = ""
+            guard let phone = candidate.phone else {
+                transferedMessage = "The phone number is required"
+                return
+            }
+            
+            if !candidate.email.isValidEmail{
+                transferedMessage = "Invalid email fomat"
+                return
+            }
+            
+            if !phone.isValidPhone {
+                transferedMessage = "Invalid phone number fomat"
+                return
+            }
+            
             do {
-                let _ = try await API.shared.call(endPoint: API.CandidatesEndPoints.createCandidate(email: "t@gmail.com", note: nil, linkedinURL: nil, firstName: "Tibo", lastName: "Giraudon", phone: "06 05 05 05 05")) as Candidate
+                let _ = try await API.shared.call(endPoint: API.CandidatesEndPoints.createCandidate(candidate: candidate)) as Candidate
+                self.fetchCandidates()
             } catch {
                 alertTitle = error.localizedDescription
                 showAlert = true

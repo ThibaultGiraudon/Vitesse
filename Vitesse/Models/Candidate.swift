@@ -24,4 +24,15 @@ struct Candidate: Codable {
         case id, firstName, lastName, email, phone, linkedinURL, note, isFavorite
     }
     
+    init(id: String = UUID().uuidString, firstName: String = "", lastName: String = "", email: String = "", phone: String? = nil, linkedinURL: String? = nil, note: String? = nil, isFavorite: Bool = false) {
+        self.id = id
+        self.firstName = firstName
+        self.lastName = lastName
+        self.email = email
+        self.phone = phone
+        self.linkedinURL = linkedinURL
+        self.note = note
+        self.isFavorite = isFavorite
+    }
+    
 }

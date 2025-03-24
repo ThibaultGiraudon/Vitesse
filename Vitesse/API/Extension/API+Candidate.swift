@@ -10,7 +10,7 @@ import Foundation
 extension API {
     enum CandidatesEndPoints: EndPoint {
         case candidate(id: String?)
-        case createCandidate(email: String, note: String?, linkedinURL: String?, firstName: String, lastName: String, phone: String)
+        case createCandidate(candidate: Candidate)
         case delete(id: String)
         case favorite(id: String)
         case update(candidate: Candidate)
@@ -54,8 +54,8 @@ extension API {
             switch self {
                 case .candidate:
                     return nil
-                case .createCandidate(let email, let note, let linkedinURL, let firstName, let lastName, let phone):
-                    let data = ["email": email, "note": note, "linkedinURL": linkedinURL, "firstName": firstName, "lastName": lastName, "phone": phone]
+                case .createCandidate(let candidate):
+                    let data = ["email": candidate.email, "note": candidate.note, "linkedinURL": candidate.linkedinURL, "firstName": candidate.firstName, "lastName": candidate.lastName, "phone": candidate.phone]
                     return try? JSONSerialization.data(withJSONObject: data)
                 case .delete:
                     return nil

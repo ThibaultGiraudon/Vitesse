@@ -65,11 +65,15 @@ struct CandidateDetailsView: View {
         .font(.cascadia())
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
-                Button("Edit") {
-                    showEditSheet = true
+                // navLink
+                NavigationLink {
+                    EditCandidateView(viewModel: viewModel)
+                        .navigationBarBackButtonHidden()
+                } label: {
+                    Text("Edit")
+                        .font(.virgil())
+                        .foregroundStyle(.black)
                 }
-                .font(.virgil())
-                .foregroundStyle(.black)
             }
             ToolbarItem(placement: .topBarLeading) {
                 Button {

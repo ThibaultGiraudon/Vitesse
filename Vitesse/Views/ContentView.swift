@@ -12,7 +12,6 @@ struct ContentView: View {
     @StateObject var user = User.shared
     var body: some View {
         ZStack {
-            
             Group {
                 if user.isLoggedIn {
                     CandidatesView()
