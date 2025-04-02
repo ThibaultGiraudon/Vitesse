@@ -21,14 +21,7 @@ extension API {
             }
         }
         
-        var authorization: API.Authorization {
-            switch self {
-                case .auth:
-                    .none
-                case .register:
-                        .none
-            }
-        }
+        var authorization: API.Authorization { .none }
         
         var method: API.Method {
             switch self {
@@ -63,6 +56,9 @@ extension API {
             var request = URLRequest(url: url)
             request.httpBody = body
             request.httpMethod = method.rawValue
+            if authorization == .user {
+                request.addValue("Bearer \(User.shared.token)", forHTTPHeaderField: "Authorization")
+            }
             request.setValue("application/json", forHTTPHeaderField: "Content-Type")
             return request
         }

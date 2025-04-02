@@ -97,8 +97,10 @@ struct AddCandidateView: View {
             }
             ToolbarItem(placement: .topBarTrailing) {
                 Button("Add") {
-                    viewModel.createCandidate(candidate)
-                    dismiss()
+                    Task {
+                        await viewModel.createCandidate(candidate)
+                        dismiss()
+                    }
                 }
                 .disabled(shouldDisable)
             }

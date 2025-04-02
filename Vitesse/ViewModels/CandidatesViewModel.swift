@@ -8,12 +8,7 @@
 import Foundation
 
 class CandidatesViewModel: ObservableObject {
-    @Published var candidates: [Candidate] = [
-        Candidate(id: UUID().uuidString, firstName: "Jean Pierre", lastName: "Pierre", email: "jp@gmail.com", phone: "06 01 01 01 01", isFavorite: false),
-        Candidate(id: UUID().uuidString, firstName: "Jean Michel", lastName: "Pierre", email: "jm@gmail.com", phone: "06 02 02 02 02", isFavorite: false),
-        Candidate(id: UUID().uuidString, firstName: "Jean Pierre", lastName: "Michel", email: "jp@gmail.com", phone: "06 03 03 03 03", isFavorite: true),
-        Candidate(id: UUID().uuidString, firstName: "Jean Michel", lastName: "Michel", email: "jm@gmail.com", phone: "06 04 04 04 04", isFavorite: true),
-    ]
+    @Published var candidates: [Candidate] = []
     @Published var alertTitle = ""
     @Published var showAlert = false
     @Published var searchText = ""
@@ -26,13 +21,72 @@ class CandidatesViewModel: ObservableObject {
             return matchesSearch && matchesFav
         }
     }
+    let api: APIProtocol
+    
+    init(api: APIProtocol = API.shared) {
+        self.api = api
+    }
     
     @MainActor
-    func fetchCandidates() {
-        Task {
+    func fetchCandidates() async {
+        do {
+            candidates = try await api.call(endPoint: API.CandidatesEndPoints.candidate(id: nil))
+            
+        } catch {
+            alertTitle = error.localizedDescription
+            showAlert = true
+        }
+    }
+    
+    @MainActor
+    func createCandidate(_ candidate: Candidate) async {
+        transferedMessage = ""
+        guard let phone = candidate.phone else {
+            transferedMessage = "The phone number is required"
+            return
+        }
+        
+        if !candidate.email.isValidEmail{
+            transferedMessage = "Invalid email format"
+            return
+        }
+        
+        if !phone.isValidPhone {
+            transferedMessage = "Invalid phone number format"
+            return
+        }
+        
+        do {
+            let newCandidate: Candidate = try await api.call(endPoint: API.CandidatesEndPoints.createCandidate(candidate: candidate))
+            candidates.append(newCandidate)
+        } catch {
+            alertTitle = error.localizedDescription
+            showAlert = true
+        }
+    }
+    
+    @MainActor
+    func deleteCandidates(selectedCandidates: [Candidate]) async {
+        for candidate in selectedCandidates {
+            guard candidates.contains(where: {$0.id == candidate.id}) else {
+                print("cant find \(candidate.firstName)")
+                return
+            }
             do {
-                candidates = try await API.shared.call(endPoint: API.CandidatesEndPoints.candidate(id: nil))
-                
+                try await api.call(endPoint: API.CandidatesEndPoints.delete(id: candidate.id))
+                candidates.removeAll(where: { $0.id == candidate.id })
+            } catch {
+                alertTitle = error.localizedDescription
+                showAlert = true
+            }
+        }
+    }
+    
+    func deleteCandidate(at index: IndexSet) async {
+        for candidateIndex in index {
+            do {
+                try await api.call(endPoint: API.CandidatesEndPoints.delete(id: candidates[candidateIndex].id))
+                candidates.removeAll(where: { $0.id == candidates[candidateIndex].id })
             } catch {
                 alertTitle = error.localizedDescription
                 showAlert = true
@@ -41,75 +95,18 @@ class CandidatesViewModel: ObservableObject {
     }
     
     @MainActor
-    func createCandidate(_ candidate: Candidate) {
-        Task {
-            transferedMessage = ""
-            guard let phone = candidate.phone else {
-                transferedMessage = "The phone number is required"
+    func setFavorite(for candidate: Candidate) async {
+        do {
+            let reponse = try await api.call(endPoint: API.CandidatesEndPoints.favorite(id: candidate.id)) as Candidate
+            guard let index = candidates.firstIndex(where: {$0.id == reponse.id}) else {
                 return
             }
             
-            if !candidate.email.isValidEmail{
-                transferedMessage = "Invalid email fomat"
-                return
-            }
+            candidates[index] = reponse
             
-            if !phone.isValidPhone {
-                transferedMessage = "Invalid phone number fomat"
-                return
-            }
-            
-            do {
-                let _ = try await API.shared.call(endPoint: API.CandidatesEndPoints.createCandidate(candidate: candidate)) as Candidate
-                self.fetchCandidates()
-            } catch {
-                alertTitle = error.localizedDescription
-                showAlert = true
-            }
-        }
-    }
-    
-    @MainActor
-    func deleteCandidates(selectedCandidates: [Candidate]) {
-        Task {
-            selectedCandidates.forEach { candidate in
-                guard candidates.contains(where: {$0.id == candidate.id}) else {
-                    print("cant find \(candidate.firstName)")
-                    return
-                }
-                deleteCandidate(candidate)
-            }
-        }
-    }
-    
-    @MainActor
-    func deleteCandidate(_ candidate: Candidate) {
-        Task {
-            do {
-                try await API.shared.call(endPoint: API.CandidatesEndPoints.delete(id: candidate.id))
-                fetchCandidates()
-            } catch {
-                alertTitle = error.localizedDescription
-                showAlert = true
-            }
-        }
-    }
-    
-    @MainActor
-    func setFavorite(for candidate: Candidate) {
-        Task {
-            do {
-                let reponse = try await API.shared.call(endPoint: API.CandidatesEndPoints.favorite(id: candidate.id)) as Candidate
-                guard let index = candidates.firstIndex(where: {$0.id == reponse.id}) else {
-                    return
-                }
-                
-                candidates[index] = reponse
-                
-            } catch {
-                alertTitle = error.localizedDescription
-                showAlert = true
-            }
+        } catch {
+            alertTitle = error.localizedDescription
+            showAlert = true
         }
     }    
 }

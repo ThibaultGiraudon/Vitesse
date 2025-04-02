@@ -59,7 +59,7 @@ struct CandidatesView: View {
                     .stroke()
             }
             .padding(3)
-            ScrollView {
+            List {
                 ForEach(viewModel.filteredCandidates, id: \.id) { candidate in
                     ZStack {
                         CandidateRowView(viewModel: viewModel, candidate: candidate, isEditing: $isEditing, selectedCandidates: $selectedCandidates)
@@ -73,15 +73,42 @@ struct CandidatesView: View {
                                 CandidateRowView(viewModel: viewModel, candidate: candidate, isEditing: $isEditing, selectedCandidates: $selectedCandidates)
                                     .foregroundStyle(.black)
                                     .padding(.vertical, 5)
-                                    .opacity(0)
                             }
+                            .opacity(0)
                         }
                     }
                 }
+                .onDelete { offsets in
+                    Task {
+                        await viewModel.deleteCandidate(at: offsets)
+                    }
+                }
+                .listRowSeparator(.hidden)
             }
+            .listStyle(.plain)
         }
         .onAppear {
-            viewModel.fetchCandidates()
+            Task {
+                await viewModel.fetchCandidates()
+            }
+        }
+        .overlay {
+            if viewModel.candidates.isEmpty {
+                VStack {
+                    Text("No candidates found")
+                        .font(.headline)
+                        .foregroundStyle(.secondary)
+                    Text("First add a candidate")
+                        .font(.caption)
+                        .foregroundStyle(.tertiary)
+                }
+            } else if viewModel.filteredCandidates.isEmpty && (!viewModel.searchText.isEmpty || viewModel.showFavorites) {
+                VStack {
+                    Text("No candidates found matching search criteria")
+                        .font(.headline)
+                        .foregroundStyle(.secondary)
+                }
+            }
         }
         .sheet(isPresented: $showAddCandidateSheet, content: {
             NavigationStack {
@@ -94,8 +121,10 @@ struct CandidatesView: View {
         }
         .alert("Warning" , isPresented: $showDeleteConfirmation) {
             Button("Delete", role: .destructive) {
-                viewModel.deleteCandidates(selectedCandidates: selectedCandidates)
-                selectedCandidates = []
+                Task {
+                    await viewModel.deleteCandidates(selectedCandidates: selectedCandidates)
+                    selectedCandidates = []
+                }
                 withAnimation {
                     isEditing.toggle()
                 }

@@ -47,8 +47,10 @@ struct LoginView: View {
             .padding(30)
             
             Button {
-                focused = false
-                viewModel.login()
+                Task {
+                    focused = false
+                    await viewModel.login()
+                }
             } label: {
                 Text("Sign In")
                     .frame(maxWidth: 100)
@@ -89,6 +91,6 @@ struct LoginView: View {
 
 #Preview {
     NavigationStack {
-        LoginView(viewModel: AuthenticationViewModel {_ in })
+        LoginView(viewModel: AuthenticationViewModel())
     }
 }

@@ -7,13 +7,24 @@
 
 import Foundation
 
-class API {
+protocol APIProtocol {
+    func call<T: Decodable>(endPoint: API.EndPoint) async throws -> T
+    func call(endPoint: API.EndPoint) async throws
+}
+
+protocol URLSessionProtocol {
+    func data(for request: URLRequest) async throws -> (Data, URLResponse)
+}
+
+extension URLSession: URLSessionProtocol { }
+
+class API: APIProtocol {
     @Published var token = ""
     static var shared = API()
-    private var session: URLSession
+    private var session: URLSessionProtocol
     private var error = URLError(.badURL)
     
-    init(session: URLSession = URLSession.shared) {
+    init(session: URLSessionProtocol = URLSession.shared) {
         self.session = session
     }
     
@@ -37,8 +48,6 @@ class API {
                     throw Error.custom(reason: decoded.reason)
                 case 404:
                     throw Error.notFound
-                case 500:
-                    throw API.Error.uniqueConstraint
                 default:
                     throw Error.internalServerError
             }
@@ -68,8 +77,6 @@ class API {
                     throw Error.custom(reason: decoded.reason)
                 case 404:
                     throw Error.notFound
-                case 500:
-                    throw API.Error.uniqueConstraint
                 default:
                     throw Error.internalServerError
             }

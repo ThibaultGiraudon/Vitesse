@@ -16,16 +16,18 @@ class CandidateViewModel: ObservableObject {
         editedCandidate.firstName.isEmpty || editedCandidate.lastName.isEmpty || editedCandidate.email.isEmpty || editedCandidate.phone == nil
     }
     @Published var transferedMessage = ""
+    let api: APIProtocol
     
-    init(candidate: Candidate) {
+    init(candidate: Candidate, api: APIProtocol = API.shared) {
         self.candidate = candidate
         self.editedCandidate = candidate
+        self.api = api
     }
     
     @MainActor
     func setFavorite() async {
         do {
-            candidate = try await API.shared.call(endPoint: API.CandidatesEndPoints.favorite(id: candidate.id))
+            candidate = try await api.call(endPoint: API.CandidatesEndPoints.favorite(id: candidate.id))
         } catch {
             alertTitle = error.localizedDescription
             showAlert = true
@@ -47,12 +49,12 @@ class CandidateViewModel: ObservableObject {
                 return
             }
             
-            guard editedCandidate.phone?.isValidPhone ?? false else {
+            guard editedCandidate.phone!.isValidPhone else {
                 transferedMessage = "Invalid phone number format."
                 return
             }
             
-            candidate = try await API.shared.call(endPoint: API.CandidatesEndPoints.update(candidate: editedCandidate)) as Candidate
+            candidate = try await api.call(endPoint: API.CandidatesEndPoints.update(candidate: editedCandidate)) as Candidate
         } catch {
             alertTitle = error.localizedDescription
             showAlert = true

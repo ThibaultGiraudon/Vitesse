@@ -16,10 +16,6 @@ class AppViewModel: ObservableObject {
     
     @MainActor
     var authViewModel: AuthenticationViewModel {
-        return AuthenticationViewModel { token in
-            User.shared.isAdmin = token.isAdmin
-            User.shared.token = token.token
-            User.shared.isLoggedIn = true
-        }
+        return AuthenticationViewModel()
     }
 }

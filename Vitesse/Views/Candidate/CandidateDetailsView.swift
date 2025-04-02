@@ -65,7 +65,6 @@ struct CandidateDetailsView: View {
         .font(.cascadia())
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
-                // navLink
                 NavigationLink {
                     EditCandidateView(viewModel: viewModel)
                         .navigationBarBackButtonHidden()

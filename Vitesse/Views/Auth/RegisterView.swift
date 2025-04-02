@@ -77,8 +77,10 @@ struct RegisterView: View {
             .padding(20)
             Spacer()
             Button {
-                viewModel.register()
-                focused = false
+                Task {
+                    await viewModel.register()
+                    focused = false
+                }
             } label: {
                 Text("Create")
                     .frame(maxWidth: 100)
@@ -116,6 +118,6 @@ struct RegisterView: View {
 
 #Preview {
     NavigationStack {
-        RegisterView(viewModel: AuthenticationViewModel { _ in })
+        RegisterView(viewModel: AuthenticationViewModel())
     }
 }

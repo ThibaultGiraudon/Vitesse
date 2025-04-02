@@ -82,7 +82,9 @@ extension API {
                 request.httpBody = body
             }
             request.httpMethod = method.rawValue
-            request.addValue("Bearer \(User.shared.token)", forHTTPHeaderField: "Authorization")
+            if authorization == .user {
+                request.addValue("Bearer \(User.shared.token)", forHTTPHeaderField: "Authorization")
+            }
             request.setValue("application/json", forHTTPHeaderField: "Content-Type")
             
             return request

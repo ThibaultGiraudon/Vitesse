@@ -15,7 +15,6 @@ extension API {
         case notFound
         case responseError
         case internalServerError
-        case uniqueConstraint
         case custom(reason: String)
         
         var errorDescription: String? {
@@ -32,8 +31,6 @@ extension API {
                     "An error occured while processing the reponse."
                 case .internalServerError:
                     "We are encountering a problem with our server. Please try aigain later."
-                case .uniqueConstraint:
-                    "This email is already taken."
                 case .custom(let reason):
                     reason
             }
