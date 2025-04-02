@@ -53,7 +53,7 @@ class AuthenticationViewModel: ObservableObject {
         }
     }
     
-//    @MainActor
+    @MainActor
     func register() async {
         do {
             guard password == confirmPassword else {

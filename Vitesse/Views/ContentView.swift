@@ -19,7 +19,6 @@ struct ContentView: View {
                     LoginView(viewModel: viewModel.authViewModel)
                 } 
             }
-            
         }
     }
 }

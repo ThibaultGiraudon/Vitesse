@@ -14,14 +14,29 @@ struct EditCandidateView: View {
     var body: some View {
         ScrollView(showsIndicators: false) {
             VStack(alignment: .leading) {
-                Text(viewModel.editedCandidate.fullName)
-                    .font(.cascadia(size: 35))
-                    .padding(.bottom, 20)
                 Group {
                     if !viewModel.transferedMessage.isEmpty {
                         Text(viewModel.transferedMessage)
                             .foregroundStyle(.red)
                     }
+                    Text("Firstname")
+                    TextField("", text: $viewModel.editedCandidate.firstName)
+                        .padding(5)
+                        .background {
+                            Rectangle()
+                                .stroke()
+                        }
+                        .autocorrectionDisabled()
+                        .focused($focused)
+                    Text("Lastname")
+                    TextField("", text: $viewModel.editedCandidate.lastName)
+                        .padding(5)
+                        .background {
+                            Rectangle()
+                                .stroke()
+                        }
+                        .autocorrectionDisabled()
+                        .focused($focused)
                     Text("Phone")
                     TextField("", text: Binding(
                         get: { viewModel.editedCandidate.phone ?? "" },
@@ -41,6 +56,8 @@ struct EditCandidateView: View {
                             Rectangle()
                                 .stroke()
                         }
+                        .autocapitalization(.none)
+                        .autocorrectionDisabled()
                         .keyboardType(.emailAddress)
                         .focused($focused)
                     Text("LinkedIn")
@@ -53,6 +70,9 @@ struct EditCandidateView: View {
                             Rectangle()
                                 .stroke()
                         }
+                        .autocorrectionDisabled()
+                        .autocapitalization(.none)
+                        .keyboardType(.URL)
                         .focused($focused)
                     Text("Note")
                     TextField("", text: Binding(

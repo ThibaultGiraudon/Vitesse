@@ -77,10 +77,6 @@ struct LoginView: View {
             }
         }
         .font(.cascadia())
-        .onAppear {
-            viewModel.email = "admin@vitesse.com"
-            viewModel.password = "tes"
-        }
         .alert(viewModel.alertTitle, isPresented: $viewModel.showAlert) {
             Button("OK") {
                 viewModel.alertTitle = ""

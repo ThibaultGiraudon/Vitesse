@@ -80,6 +80,9 @@ struct RegisterView: View {
                 Task {
                     await viewModel.register()
                     focused = false
+                    if User.shared.isLoggedIn {
+                        dismiss()
+                    }
                 }
             } label: {
                 Text("Create")

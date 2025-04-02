@@ -58,6 +58,8 @@ struct AddCandidateView: View {
                             Rectangle()
                                 .stroke()
                         }
+                        .autocapitalization(.none)
+                        .autocorrectionDisabled()
                         .keyboardType(.emailAddress)
                         .focused($focused)
                     Text("LinkedIn")
@@ -70,6 +72,9 @@ struct AddCandidateView: View {
                         Rectangle()
                             .stroke()
                     }
+                    .autocorrectionDisabled()
+                    .autocapitalization(.none)
+                    .keyboardType(.URL)
                     .focused($focused)
                     Text("Note")
                     TextField("", text: Binding(
