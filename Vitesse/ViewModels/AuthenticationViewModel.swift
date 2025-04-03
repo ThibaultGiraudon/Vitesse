@@ -7,25 +7,36 @@
 
 import Foundation
 
+/// ViewModel handling authentication logic.
 class AuthenticationViewModel: ObservableObject {
+    /// User's input
     @Published var email = ""
     @Published var password = ""
     @Published var firstName = ""
     @Published var lastName = ""
     @Published var confirmPassword = ""
+    
+    /// Handles error.
     @Published var transferedMessage = ""
     @Published var showAlert: Bool = false
     @Published var alertTitle: String = ""
+    
+    /// Determines if the registration button should be disabled.
     var shouldDisable: Bool {
         email.isEmpty || password.isEmpty || firstName.isEmpty || lastName.isEmpty || confirmPassword.isEmpty
     }
+    
+    /// API instance used for authentication requests.
     let api: APIProtocol
     
-    
+    /// Initializes the authentication ViewModel with an API instance for injection tests.
     init(api: APIProtocol = API.shared) {
         self.api = api
     }
     
+    /// Attempts to log in the user.
+    /// - Updates `User.shared` upon success.
+    /// - Displays error messages in case of failure.
     @MainActor
     func login() async {
         do {
@@ -53,6 +64,9 @@ class AuthenticationViewModel: ObservableObject {
         }
     }
     
+    /// Attempts to register a new user.
+    /// - Performs validation checks before sending request.
+    /// - In case of success automatically log in the suer.
     @MainActor
     func register() async {
         do {

@@ -8,8 +8,11 @@
 import Foundation
 
 extension API {
+    /// Defines the available endpoints for authentication-related operations.
     enum AuthEndPoints: EndPoint {
+        /// Authenticates user.
         case auth(email: String, password: String)
+        /// Register user.
         case register(email: String, password: String, firstName: String, lastName: String)
         
         var path: String {

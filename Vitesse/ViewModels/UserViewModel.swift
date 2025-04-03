@@ -8,7 +8,9 @@
 import Foundation
 import SwiftUI
 
+/// Handles the user's parameters
 class User: ObservableObject {
+    /// Tokens for authorization request
     @Published var token = ""
     @Published var isAdmin = false
     @Published var isLoggedIn = false

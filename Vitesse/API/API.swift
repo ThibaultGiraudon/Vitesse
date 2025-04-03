@@ -7,29 +7,36 @@
 
 import Foundation
 
+/// Defines the requirements for an API.
 protocol APIProtocol {
     func call<T: Decodable>(endPoint: API.EndPoint) async throws -> T
     func call(endPoint: API.EndPoint) async throws
 }
 
+/// Defines the requirements for an URLSession.
 protocol URLSessionProtocol {
     func data(for request: URLRequest) async throws -> (Data, URLResponse)
 }
 
 extension URLSession: URLSessionProtocol { }
 
+/// Handles API requests and communication with the server.
 class API: APIProtocol {
-    @Published var token = ""
+    /// A shared instance of the API for global access.
     static var shared = API()
+    /// The URL session used for network requests.
     private var session: URLSessionProtocol
-    private var error = URLError(.badURL)
     
+    /// Initializes the API with a URLSession instance for injection tests.
     init(session: URLSessionProtocol = URLSession.shared) {
         self.session = session
     }
     
-    
-    
+    /// Sends a request to the given endpoint and decodes the reponse into a specified `Decodable` type.
+    ///
+    /// - Parameter endPoint: The API endpoint to call.
+    /// - Returns: The decoded response of type `T`.
+    /// - Throws: An `API.Error` if the request fails or the response in invalid.
     func call<T: Decodable>(endPoint: EndPoint) async throws -> T {
         guard let request = endPoint.request else {
             throw Error.badRequest
@@ -58,6 +65,10 @@ class API: APIProtocol {
         return decoded
     }
 
+    /// Sends a request to the given endpoint without expecting a response..
+    ///
+    /// - Parameter endPoint: The API endpoint to call.
+    /// - Throws: An `API.Error` if the request fails or the response in invalid.
     func call(endPoint: EndPoint) async throws {
         guard let request = endPoint.request else {
             throw Error.badRequest

@@ -7,23 +7,39 @@
 
 import Foundation
 
+/// ViewModel managing a single candidate's details and updates.
 class CandidateViewModel: ObservableObject {
+    /// The current candidate being viewed or edited.
     @Published var candidate: Candidate
+    /// A copy of the candidate used for editing before saving changes.
     @Published var editedCandidate: Candidate
+
+    /// Handles error.
     @Published var showAlert = false
     @Published var alertTitle = ""
+    @Published var transferedMessage = ""
+    
+    /// Determines if the saving button should be disabled.
     var shouldDisable: Bool {
         editedCandidate.firstName.isEmpty || editedCandidate.lastName.isEmpty || editedCandidate.email.isEmpty || editedCandidate.phone == nil
     }
-    @Published var transferedMessage = ""
+    
+    /// API instance used for authentication requests.
     let api: APIProtocol
     
+    /// Initializes the candidate ViewModel.
+    /// - Parameters:
+    ///   - candidate: The candidate to be displayed and edited.
+    ///   - api: An API instance for injection tests.
     init(candidate: Candidate, api: APIProtocol = API.shared) {
         self.candidate = candidate
         self.editedCandidate = candidate
         self.api = api
     }
     
+    /// Toggles the favorite status of a candidate.
+    /// - Updates the `candidate` property.
+    /// - Updates the candidate in the API.
     @MainActor
     func setFavorite() async {
         do {
@@ -34,6 +50,7 @@ class CandidateViewModel: ObservableObject {
         }
     }
     
+    /// Updates the candidate's information after validating the input fields.
     @MainActor
     func updateCandidate() async {
         do {

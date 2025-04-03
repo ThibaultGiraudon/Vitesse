@@ -7,13 +7,21 @@
 
 import Foundation
 
+/// ViewModel managing candidates-related operations.
 class CandidatesViewModel: ObservableObject {
+    /// List of all candidates
     @Published var candidates: [Candidate] = []
+    
+    /// Handles error.
     @Published var alertTitle = ""
     @Published var showAlert = false
+    @Published var transferedMessage = ""
+    
+    /// Handles filtering candidates.
     @Published var searchText = ""
     @Published var showFavorites = false
-    @Published var transferedMessage = ""
+    
+    /// Filtered list of candidates based on search criteria and favorite ststaus
     var filteredCandidates: [Candidate] {
         candidates.filter { candidate in
             let matchesSearch = searchText.isEmpty || candidate.firstName.contains(searchText) || candidate.lastName.contains(searchText)
@@ -21,12 +29,16 @@ class CandidatesViewModel: ObservableObject {
             return matchesSearch && matchesFav
         }
     }
+    
+    /// API instance used for authentication requests.
     let api: APIProtocol
     
+    /// Initializes the candidates ViewModel with an API instance for injection tests.
     init(api: APIProtocol = API.shared) {
         self.api = api
     }
     
+    /// Fetches the list of candidates.
     @MainActor
     func fetchCandidates() async {
         do {
@@ -38,6 +50,9 @@ class CandidatesViewModel: ObservableObject {
         }
     }
     
+    /// Creates a new candidate.
+    /// - Performs validation checks before sending request.
+    /// - Adds the created candidate to the list upon success.
     @MainActor
     func createCandidate(_ candidate: Candidate) async {
         transferedMessage = ""
@@ -65,6 +80,8 @@ class CandidatesViewModel: ObservableObject {
         }
     }
     
+    /// Deletes a list of selected candidates.
+    /// - Iterates over the selections and removes them from the API and local list.
     @MainActor
     func deleteCandidates(selectedCandidates: [Candidate]) async {
         for candidate in selectedCandidates {
@@ -82,6 +99,9 @@ class CandidatesViewModel: ObservableObject {
         }
     }
     
+    /// Deletes a candidates by its index in the list.
+    /// - Conform to `onDelete` modifier.
+    /// - Removes the candidate from the API and local list.
     func deleteCandidate(at index: IndexSet) async {
         for candidateIndex in index {
             do {
@@ -94,6 +114,8 @@ class CandidatesViewModel: ObservableObject {
         }
     }
     
+    /// Toggles the favorite status of a candidate.
+    /// - Updates the candidate in the API and local list.
     @MainActor
     func setFavorite(for candidate: Candidate) async {
         do {

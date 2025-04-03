@@ -8,6 +8,7 @@
 import Foundation
 
 extension API {
+    /// Defines the constants for  API requests.
     struct Constants {
         static var scheme = "http"
         static var host = "192.168.1.59"

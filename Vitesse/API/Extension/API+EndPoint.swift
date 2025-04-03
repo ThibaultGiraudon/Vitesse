@@ -8,6 +8,7 @@
 import Foundation
 
 extension API {
+    /// Defines the requirement for an API endpoint.
     protocol EndPoint {
         var path: String { get }
         var authorization: Authorization { get }
@@ -16,11 +17,13 @@ extension API {
         var request: URLRequest? { get }
     }
     
+    /// Represents different types of authorization for API request.
     enum Authorization {
         case none
         case user
     }
     
+    /// Defines the supported HTTP methods.
     enum Method: String {
         case post = "POST"
         case get = "GET"
