@@ -32,7 +32,7 @@ class CandidateViewModel: ObservableObject {
     /// - Parameters:
     ///   - candidate: The candidate to be displayed and edited.
     ///   - api: An API instance for injection tests.
-    init(candidate: Candidate, session: URLSessionProtocol = URLSession.shared) {
+    init(candidate: Candidate, session: URLSessionInterface = URLSession.shared) {
         self.candidate = candidate
         self.editedCandidate = candidate
         self.api = API(session: session)

@@ -35,7 +35,7 @@ class CandidatesViewModel: ObservableObject {
     let api: API
     
     /// Initializes the candidates ViewModel with an API instance for injection tests.
-    init(session: URLSessionProtocol = URLSession.shared) {
+    init(session: URLSessionInterface = URLSession.shared) {
         self.api = API(session: session)
     }
     

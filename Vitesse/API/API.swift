@@ -8,21 +8,21 @@
 import Foundation
 
 /// Defines the requirements for an URLSession.
-protocol URLSessionProtocol {
+protocol URLSessionInterface {
     func data(for request: URLRequest) async throws -> (Data, URLResponse)
 }
 
-extension URLSession: URLSessionProtocol { }
+extension URLSession: URLSessionInterface { }
 
 /// Handles API requests and communication with the server.
 class API {
     /// A shared instance of the API for global access.
     static var shared = API()
     /// The URL session used for network requests.
-    private var session: URLSessionProtocol
+    private var session: URLSessionInterface
     
     /// Initializes the API with a URLSession instance for injection tests.
-    init(session: URLSessionProtocol = URLSession.shared) {
+    init(session: URLSessionInterface = URLSession.shared) {
         self.session = session
     }
     

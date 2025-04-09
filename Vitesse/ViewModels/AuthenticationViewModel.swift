@@ -31,7 +31,7 @@ class AuthenticationViewModel: ObservableObject {
     let api: API
     
     /// Initializes the authentication ViewModel with an API instance for injection tests.
-    init(session: URLSessionProtocol = URLSession.shared) {
+    init(session: URLSessionInterface = URLSession.shared) {
         self.api = API(session: session)
     }
     
