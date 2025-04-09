@@ -138,4 +138,29 @@ final class AuthenticationTests: XCTestCase {
         XCTAssertEqual(viewModel.transferedMessage, "Invalid email format.")
         XCTAssertFalse(viewModel.showAlert)
     }
+    
+    func testRegisterFailedWithBadURL() async {
+        let session = URLSessionFake()
+        session.error = URLError(.badURL)
+        let viewModel = AuthenticationViewModel(session: session)
+        
+        viewModel.password = "qwerty123"
+        viewModel.confirmPassword = "qwerty123"
+        viewModel.email = "admin@vitesse.com"
+        await viewModel.register()
+        XCTAssertEqual(viewModel.alertTitle, URLError(.badURL).localizedDescription)
+        XCTAssertTrue(viewModel.showAlert)
+    }
+    
+    func testLoginFailedWithBadURL() async {
+        let session = URLSessionFake()
+        session.error = URLError(.badURL)
+        let viewModel = AuthenticationViewModel(session: session)
+        
+        viewModel.password = "qwerty123"
+        viewModel.email = "admin@vitesse.com"
+        await viewModel.login()
+        XCTAssertEqual(viewModel.alertTitle, URLError(.badURL).localizedDescription)
+        XCTAssertTrue(viewModel.showAlert)
+    }
 }
