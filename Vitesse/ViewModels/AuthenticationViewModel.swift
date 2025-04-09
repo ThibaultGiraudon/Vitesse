@@ -28,11 +28,11 @@ class AuthenticationViewModel: ObservableObject {
     }
     
     /// API instance used for authentication requests.
-    let api: APIProtocol
+    let api: API
     
     /// Initializes the authentication ViewModel with an API instance for injection tests.
-    init(api: APIProtocol = API.shared) {
-        self.api = api
+    init(session: URLSessionInterface = URLSession.shared) {
+        self.api = API(session: session)
     }
     
     /// Attempts to log in the user.
@@ -84,7 +84,7 @@ class AuthenticationViewModel: ObservableObject {
                 return
             }
             
-            try await api.call(endPoint: API.AuthEndPoints.register(email: email, password: password, firstName: firstName, lastName: lastName))
+            let _ = try await api.call(endPoint: API.AuthEndPoints.register(email: email, password: password, firstName: firstName, lastName: lastName)) as EmptyResponse
             
             await self.login()
         } catch let error as API.Error {

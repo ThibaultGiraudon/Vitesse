@@ -26,16 +26,16 @@ class CandidateViewModel: ObservableObject {
     }
     
     /// API instance used for authentication requests.
-    let api: APIProtocol
+    let api: API
     
     /// Initializes the candidate ViewModel.
     /// - Parameters:
     ///   - candidate: The candidate to be displayed and edited.
     ///   - api: An API instance for injection tests.
-    init(candidate: Candidate, api: APIProtocol = API.shared) {
+    init(candidate: Candidate, session: URLSessionInterface = URLSession.shared) {
         self.candidate = candidate
         self.editedCandidate = candidate
-        self.api = api
+        self.api = API(session: session)
     }
     
     /// Toggles the favorite status of a candidate.

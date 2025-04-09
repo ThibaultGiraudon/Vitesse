@@ -8,7 +8,7 @@
 import Foundation
 @testable import Vitesse
 
-class URLSessionFake: URLSessionProtocol {
+class URLSessionFake: URLSessionInterface {
     var fakeData: Data?
     var fakeResponse: URLResponse?
     var error: Error?

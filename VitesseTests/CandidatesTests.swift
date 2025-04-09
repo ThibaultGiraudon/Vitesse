@@ -13,9 +13,8 @@ import SwiftUI
 final class CandidatesTests: XCTestCase {
 
     func testFetchCandidatesSucceeds() async {
-        let api = APIFake()
-        api.data = FakeData.candidatesSucceed!
-        let viewModel = CandidatesViewModel(api: api)
+        let session = URLSessionFake(data: FakeData.candidatesSucceed)
+        let viewModel = CandidatesViewModel(session: session)
         
         await viewModel.fetchCandidates()
         guard let candidate = viewModel.candidates.first else {
@@ -27,35 +26,37 @@ final class CandidatesTests: XCTestCase {
     }
     
     func testFetchCandidatesFailedWithInternalError() async {
-        let api = APIFake()
-        api.shouldSucceed = false
-        api.error = API.Error.internalServerError
-        let viewModel = CandidatesViewModel(api: api)
+        let response = HTTPURLResponse(url: URL(string: "https://openclassrooms.com")!, statusCode: 500, httpVersion: nil, headerFields: nil)
+        let apiError = API.APIError(reason: "Email already in use", error: true)
+        let data = try! JSONEncoder().encode(apiError)
+        let session = URLSessionFake(data: data, response: response)
+        let viewModel = CandidatesViewModel(session: session)
         
         await viewModel.fetchCandidates()
         XCTAssertEqual(viewModel.alertTitle, API.Error.internalServerError.localizedDescription)
     }
     
+    func testFetchCandidatesFailedWithNotFound() async {
+        let response = HTTPURLResponse(url: URL(string: "https://openclassrooms.com")!, statusCode: 404, httpVersion: nil, headerFields: nil)
+        let apiError = API.APIError(reason: "Email already in use", error: true)
+        let data = try! JSONEncoder().encode(apiError)
+        let session = URLSessionFake(data: data, response: response)
+        let viewModel = CandidatesViewModel(session: session)
+        
+        await viewModel.fetchCandidates()
+        XCTAssertEqual(viewModel.alertTitle, API.Error.notFound.localizedDescription)
+    }
+    
     func testCreateCandidateSucceeds() async {
-        let api = APIFake()
-        api.data = FakeData.candidateSucceed!
-        let viewModel = CandidatesViewModel(api: api)
+        let session = URLSessionFake(data: FakeData.candidateSucceed)
+        let viewModel = CandidatesViewModel(session: session)
         
         var newCandidate = Candidate()
         newCandidate.phone = "0612121212"
         newCandidate.email = "admin@vitesse.com"
         
-        do {
-            let test = try JSONDecoder().decode(Candidate.self, from: api.data)
-            print(test)
-        } catch {
-            print(error)
-        }
-        
         await viewModel.createCandidate(newCandidate)
         guard let candidate = viewModel.candidates.first else {
-            print(viewModel.alertTitle)
-            print(viewModel.transferedMessage)
             XCTFail("Candidates should have items")
             return
         }
@@ -64,10 +65,11 @@ final class CandidatesTests: XCTestCase {
     }
     
     func testCreateCandidateFailedWithInternalError() async {
-        let api = APIFake()
-        api.shouldSucceed = false
-        api.error = API.Error.internalServerError
-        let viewModel = CandidatesViewModel(api: api)
+        let response = HTTPURLResponse(url: URL(string: "https://openclassrooms.com")!, statusCode: 500, httpVersion: nil, headerFields: nil)
+        let apiError = API.APIError(reason: "Email already in use", error: true)
+        let data = try! JSONEncoder().encode(apiError)
+        let session = URLSessionFake(data: data, response: response)
+        let viewModel = CandidatesViewModel(session: session)
         
         var newCandidate = Candidate()
         newCandidate.phone = "0612121212"
@@ -78,10 +80,8 @@ final class CandidatesTests: XCTestCase {
     }
     
     func testCreateCandidateFailedWithInvalidMail() async {
-        let api = APIFake()
-        api.shouldSucceed = false
-        api.error = API.Error.internalServerError
-        let viewModel = CandidatesViewModel(api: api)
+        let session = URLSessionFake()
+        let viewModel = CandidatesViewModel(session: session)
         
         var newCandidate = Candidate()
         newCandidate.phone = "0612121212"
@@ -92,10 +92,8 @@ final class CandidatesTests: XCTestCase {
     }
     
     func testCreateCandidateFailedWithInvalidPhone() async {
-        let api = APIFake()
-        api.shouldSucceed = false
-        api.error = API.Error.internalServerError
-        let viewModel = CandidatesViewModel(api: api)
+        let session = URLSessionFake()
+        let viewModel = CandidatesViewModel(session: session)
         
         var newCandidate = Candidate()
         newCandidate.phone = "0612121"
@@ -106,10 +104,8 @@ final class CandidatesTests: XCTestCase {
     }
     
     func testCreateCandidateFailedWithNoPhone() async {
-        let api = APIFake()
-        api.shouldSucceed = false
-        api.error = API.Error.internalServerError
-        let viewModel = CandidatesViewModel(api: api)
+        let session = URLSessionFake()
+        let viewModel = CandidatesViewModel(session: session)
         
         var newCandidate = Candidate()
         newCandidate.phone = nil
@@ -120,9 +116,8 @@ final class CandidatesTests: XCTestCase {
     }
     
     func testDeleteCandidatesSuccess() async {
-        let api = APIFake()
-        api.shouldSucceed = true
-        let viewModel = CandidatesViewModel(api: api)
+        let session = URLSessionFake()
+        let viewModel = CandidatesViewModel(session: session)
         let candidates = try! JSONDecoder().decode([Candidate].self, from: FakeData.candidatesSucceed!)
         viewModel.candidates = candidates
         
@@ -133,9 +128,8 @@ final class CandidatesTests: XCTestCase {
     }
     
     func testDeleteCandidatesFailedCantFindCandidate() async {
-        let api = APIFake()
-        api.shouldSucceed = true
-        let viewModel = CandidatesViewModel(api: api)
+        let session = URLSessionFake()
+        let viewModel = CandidatesViewModel(session: session)
         viewModel.candidates = try! JSONDecoder().decode([Candidate].self, from: FakeData.candidatesSucceed!)
         
         let candidates = [Candidate()]
@@ -147,10 +141,11 @@ final class CandidatesTests: XCTestCase {
     }
     
     func testDeleteCandidatesFailedwithInternalError() async {
-        let api = APIFake()
-        api.shouldSucceed = false
-        api.error = API.Error.internalServerError
-        let viewModel = CandidatesViewModel(api: api)
+        let response = HTTPURLResponse(url: URL(string: "https://openclassrooms.com")!, statusCode: 500, httpVersion: nil, headerFields: nil)
+        let apiError = API.APIError(reason: "Email already in use", error: true)
+        let data = try! JSONEncoder().encode(apiError)
+        let session = URLSessionFake(data: data, response: response)
+        let viewModel = CandidatesViewModel(session: session)
         let candidates = try! JSONDecoder().decode([Candidate].self, from: FakeData.candidatesSucceed!)
         viewModel.candidates = candidates
         
@@ -162,9 +157,8 @@ final class CandidatesTests: XCTestCase {
     }
     
     func testDeleteCandidateSuccess() async {
-        let api = APIFake()
-        api.shouldSucceed = true
-        let viewModel = CandidatesViewModel(api: api)
+        let session = URLSessionFake()
+        let viewModel = CandidatesViewModel(session: session)
         let candidates = try! JSONDecoder().decode([Candidate].self, from: FakeData.candidatesSucceed!)
         viewModel.candidates = candidates
         
@@ -175,10 +169,11 @@ final class CandidatesTests: XCTestCase {
     }
     
     func testDeleteCandidateFailedwithInternalError() async {
-        let api = APIFake()
-        api.shouldSucceed = false
-        api.error = API.Error.internalServerError
-        let viewModel = CandidatesViewModel(api: api)
+        let response = HTTPURLResponse(url: URL(string: "https://openclassrooms.com")!, statusCode: 500, httpVersion: nil, headerFields: nil)
+        let apiError = API.APIError(reason: "Email already in use", error: true)
+        let data = try! JSONEncoder().encode(apiError)
+        let session = URLSessionFake(data: data, response: response)
+        let viewModel = CandidatesViewModel(session: session)
         viewModel.candidates = try! JSONDecoder().decode([Candidate].self, from: FakeData.candidatesSucceed!)
         
         XCTAssertEqual(viewModel.candidates.count, 1)
@@ -189,10 +184,8 @@ final class CandidatesTests: XCTestCase {
     }
     
     func testSetFavoriteSucceeds() async {
-        let api = APIFake()
-        api.shouldSucceed = true
-        api.data = FakeData.candidateFavoriteSucceed!
-        let viewModel = CandidatesViewModel(api: api)
+        let session = URLSessionFake(data: FakeData.candidateFavoriteSucceed)
+        let viewModel = CandidatesViewModel(session: session)
         let candidate = try! JSONDecoder().decode(Candidate.self, from: FakeData.candidateSucceed!)
         viewModel.candidates = try! JSONDecoder().decode([Candidate].self, from: FakeData.candidatesSucceed!)
         
@@ -201,20 +194,19 @@ final class CandidatesTests: XCTestCase {
     }
     
     func testSetFavoriteFailedWithCantFindCandidate() async {
-        let api = APIFake()
-        api.shouldSucceed = true
-        api.data = FakeData.candidateFavoriteSucceed!
-        let viewModel = CandidatesViewModel(api: api)
+        let session = URLSessionFake(data: FakeData.candidateFavoriteSucceed)
+        let viewModel = CandidatesViewModel(session: session)
         let candidate = try! JSONDecoder().decode(Candidate.self, from: FakeData.candidateFavoriteSucceed!)
         
         await viewModel.setFavorite(for: candidate)
     }
     
     func testSetFavoriteFailedwithInternalError() async {
-        let api = APIFake()
-        api.shouldSucceed = false
-        api.error = API.Error.internalServerError
-        let viewModel = CandidatesViewModel(api: api)
+        let response = HTTPURLResponse(url: URL(string: "https://openclassrooms.com")!, statusCode: 500, httpVersion: nil, headerFields: nil)
+        let apiError = API.APIError(reason: "Email already in use", error: true)
+        let data = try! JSONEncoder().encode(apiError)
+        let session = URLSessionFake(data: data, response: response)
+        let viewModel = CandidatesViewModel(session: session)
         let candidate = try! JSONDecoder().decode(Candidate.self, from: FakeData.candidateSucceed!)
         
         await viewModel.setFavorite(for: candidate)
