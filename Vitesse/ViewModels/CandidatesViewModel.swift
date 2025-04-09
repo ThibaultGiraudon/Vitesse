@@ -11,12 +11,7 @@ import Foundation
 @MainActor
 class CandidatesViewModel: ObservableObject {
     /// List of all candidates
-    @Published var candidates: [Candidate] = [
-        Candidate(),
-        Candidate(),
-        Candidate(),
-        Candidate(),
-    ]
+    @Published var candidates: [Candidate] = []
     
     @Published var selectedCandidates: [Candidate] = []
         
