@@ -42,6 +42,8 @@ class CandidateViewModel: ObservableObject {
     /// - Updates the `candidate` property.
     /// - Updates the candidate in the API.
     func setFavorite() async {
+        transferedMessage = ""
+        alertTitle = ""
         do {
             candidate = try await api.call(endPoint: API.CandidatesEndPoints.favorite(id: candidate.id))
         } catch {
@@ -54,7 +56,7 @@ class CandidateViewModel: ObservableObject {
     func updateCandidate() async {
         do {
             transferedMessage = ""
-            
+            alertTitle = ""
             guard editedCandidate.email.isValidEmail else {
                 transferedMessage = "Invalid email format."
                 return

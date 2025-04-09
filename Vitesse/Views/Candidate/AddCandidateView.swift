@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct AddCandidateView: View {
-    @StateObject var viewModel: CandidatesViewModel
+    @ObservedObject var viewModel: CandidatesViewModel
     @State private var candidate = Candidate()
     @FocusState var focused
     @Environment(\.dismiss) var dismiss
@@ -85,11 +85,33 @@ struct AddCandidateView: View {
                 .disabled(shouldDisable)
             }
         }
+        .alert(viewModel.alertTitle, isPresented: $viewModel.showAlertSheet) {
+            
+        }
+    }
+}
+
+struct ParentView: View {
+    @State private var showSheet = false
+    @StateObject var viewModel = CandidatesViewModel()
+    var body: some View {
+        VStack {
+            Text("Button")
+                .onTapGesture {
+                    print("tapped")
+                    showSheet.toggle()
+                }
+        }
+        .sheet(isPresented: $showSheet) {
+            NavigationStack {
+                AddCandidateView(viewModel: viewModel)
+            }
+        }
     }
 }
 
 #Preview {
     NavigationStack {
-        AddCandidateView(viewModel: CandidatesViewModel())
+        ParentView()
     }
 }

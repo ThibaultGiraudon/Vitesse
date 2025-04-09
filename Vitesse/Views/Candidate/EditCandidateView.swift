@@ -75,7 +75,7 @@ struct EditCandidateView: View {
                         Task {
                             focused = false
                             await viewModel.updateCandidate()
-                            if viewModel.transferedMessage.isEmpty && !viewModel.showAlert {
+                            if viewModel.transferedMessage.isEmpty && viewModel.alertTitle.isEmpty {
                                 dismiss()
                             }
                         }

@@ -18,6 +18,7 @@ class CandidatesViewModel: ObservableObject {
     /// Handles error.
     @Published var alertTitle = ""
     @Published var showAlert = false
+    @Published var showAlertSheet = false
     @Published var transferedMessage = ""
     
     /// Handles filtering candidates.
@@ -43,6 +44,8 @@ class CandidatesViewModel: ObservableObject {
     
     /// Fetches the list of candidates.
     func fetchCandidates() async {
+        transferedMessage = ""
+        alertTitle = ""
         do {
             candidates = try await api.call(endPoint: API.CandidatesEndPoints.candidates)
             
@@ -57,6 +60,7 @@ class CandidatesViewModel: ObservableObject {
     /// - Adds the created candidate to the list upon success.
     func createCandidate(_ candidate: Candidate) async {
         transferedMessage = ""
+        alertTitle = ""
         guard let phone = candidate.phone else {
             transferedMessage = "The phone number is required"
             return
@@ -77,13 +81,15 @@ class CandidatesViewModel: ObservableObject {
             candidates.append(newCandidate)
         } catch {
             alertTitle = error.localizedDescription
-            showAlert = true
+            showAlertSheet = true
         }
     }
     
     /// Deletes a list of selected candidates.
     /// - Iterates over the selections and removes them from the API and local list.
     func deleteCandidates() async {
+        transferedMessage = ""
+        alertTitle = ""
         for candidate in selectedCandidates {
             guard candidates.contains(where: {$0.id == candidate.id}) else {
                 print("cant find \(candidate.firstName)")
@@ -104,6 +110,8 @@ class CandidatesViewModel: ObservableObject {
     /// - Conform to `onDelete` modifier.
     /// - Removes the candidate from the API and local list.
     func deleteCandidate(at index: IndexSet) async {
+        transferedMessage = ""
+        alertTitle = ""
         for candidateIndex in index {
             do {
                 let _ = try await api.call(endPoint: API.CandidatesEndPoints.delete(id: candidates[candidateIndex].id)) as EmptyResponse
@@ -118,6 +126,8 @@ class CandidatesViewModel: ObservableObject {
     /// Toggles the favorite status of a candidate.
     /// - Updates the candidate in the API and local list.
     func setFavorite(for candidate: Candidate) async {
+        transferedMessage = ""
+        alertTitle = ""
         do {
             let reponse = try await api.call(endPoint: API.CandidatesEndPoints.favorite(id: candidate.id)) as Candidate
             guard let index = candidates.firstIndex(where: {$0.id == reponse.id}) else {

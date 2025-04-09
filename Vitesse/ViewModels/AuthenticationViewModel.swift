@@ -40,6 +40,8 @@ class AuthenticationViewModel: ObservableObject {
     /// - Displays error messages in case of failure.
     func login() async {
         do {
+            transferedMessage = ""
+            alertTitle = ""
             guard email.isValidEmail else {
                 transferedMessage = "Invalid email format."
                 return
@@ -69,6 +71,8 @@ class AuthenticationViewModel: ObservableObject {
     /// - In case of success automatically log in the suer.
     func register() async {
         do {
+            transferedMessage = ""
+            alertTitle = ""
             guard password == confirmPassword else {
                 transferedMessage = "Passwords don't match."
                 return

@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct CandidatesView: View {
-    @ObservedObject var viewModel = CandidatesViewModel()
+    @StateObject var viewModel = CandidatesViewModel()
     @State private var isEditing = false
     @State private var showDeleteConfirmation = false
     @State private var showAddCandidateSheet: Bool = false
