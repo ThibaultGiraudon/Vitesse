@@ -19,22 +19,6 @@ final class APITests: XCTestCase {
         } catch let error as API.Error where error == .badRequest {
             
         } catch {
-            print(error)
-            XCTFail()
-        }
-    }
-    
-    func testCallWithoutResponseShouldThrowBadRequest() async {
-        let sessionFake = URLSessionFake()
-        
-        let api = API(session: sessionFake)
-        
-        do {
-            try await api.call(endPoint: API.EndPointsFake.fake)
-        } catch let error as API.Error where error == .badRequest {
-            
-        } catch {
-            print(error)
             XCTFail()
         }
     }

@@ -84,7 +84,7 @@ class AuthenticationViewModel: ObservableObject {
                 return
             }
             
-            try await api.call(endPoint: API.AuthEndPoints.register(email: email, password: password, firstName: firstName, lastName: lastName))
+            let _ = try await api.call(endPoint: API.AuthEndPoints.register(email: email, password: password, firstName: firstName, lastName: lastName)) as EmptyResponse
             
             await self.login()
         } catch let error as API.Error {

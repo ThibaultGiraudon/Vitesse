@@ -57,8 +57,6 @@ final class CandidatesTests: XCTestCase {
         
         await viewModel.createCandidate(newCandidate)
         guard let candidate = viewModel.candidates.first else {
-            print(viewModel.alertTitle)
-            print(viewModel.transferedMessage)
             XCTFail("Candidates should have items")
             return
         }

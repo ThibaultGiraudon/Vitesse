@@ -16,7 +16,6 @@ final class CandidateTests: XCTestCase {
         let viewModel = CandidateViewModel(candidate: candidate, session: session)
         
         await viewModel.updateCandidate()
-        print(viewModel.transferedMessage)
         XCTAssertEqual(viewModel.candidate.firstName, "Rima")
     }
     

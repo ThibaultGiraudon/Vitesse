@@ -88,7 +88,7 @@ class CandidatesViewModel: ObservableObject {
                 return
             }
             do {
-                try await api.call(endPoint: API.CandidatesEndPoints.delete(id: candidate.id))
+                let _ = try await api.call(endPoint: API.CandidatesEndPoints.delete(id: candidate.id)) as EmptyResponse
                 candidates.removeAll(where: { $0.id == candidate.id })
             } catch {
                 alertTitle = error.localizedDescription
@@ -103,7 +103,7 @@ class CandidatesViewModel: ObservableObject {
     func deleteCandidate(at index: IndexSet) async {
         for candidateIndex in index {
             do {
-                try await api.call(endPoint: API.CandidatesEndPoints.delete(id: candidates[candidateIndex].id))
+                let _ = try await api.call(endPoint: API.CandidatesEndPoints.delete(id: candidates[candidateIndex].id)) as EmptyResponse
                 candidates.removeAll(where: { $0.id == candidates[candidateIndex].id })
             } catch {
                 alertTitle = error.localizedDescription
