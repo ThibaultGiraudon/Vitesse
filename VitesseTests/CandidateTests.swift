@@ -11,10 +11,9 @@ import XCTest
 @MainActor
 final class CandidateTests: XCTestCase {
     func testUpdateCandidateSucceeds() async {
-        let api = APIFake()
-        api.data = FakeData.candidateSucceed!
+        let session = URLSessionFake(data: FakeData.candidateSucceed)
         let candidate = Candidate(firstName: "Marie", lastName: "Curie", email: "marie.curie@gmail.com", phone: "06 12 12 12 12")
-        let viewModel = CandidateViewModel(candidate: candidate, api: api)
+        let viewModel = CandidateViewModel(candidate: candidate, session: session)
         
         await viewModel.updateCandidate()
         print(viewModel.transferedMessage)
@@ -48,22 +47,22 @@ final class CandidateTests: XCTestCase {
     }
     
     func testUpdateCandidateFailedWithInternalError() async {
-        let api = APIFake()
-        api.shouldSucceed = false
-        api.error = API.Error.internalServerError
+        let response = HTTPURLResponse(url: URL(string: "https://openclassrooms.com")!, statusCode: 500, httpVersion: nil, headerFields: nil)
+        let apiError = API.APIError(reason: "Email already in use", error: true)
+        let data = try! JSONEncoder().encode(apiError)
+        let session = URLSessionFake(data: data, response: response)
         var candidate = try! JSONDecoder().decode(Candidate.self, from: FakeData.candidateSucceed!)
         candidate.phone = "06 12 12 12 12"
-        let viewModel = CandidateViewModel(candidate: candidate, api: api)
+        let viewModel = CandidateViewModel(candidate: candidate, session: session)
         
         await viewModel.updateCandidate()
         XCTAssertEqual(viewModel.alertTitle, API.Error.internalServerError.localizedDescription)
     }
     
     func testSetFavoriteSucceeds() async {
-        let api = APIFake()
-        api.data = FakeData.candidateFavoriteSucceed!
+        let session = URLSessionFake(data: FakeData.candidateFavoriteSucceed)
         let candidate = try! JSONDecoder().decode(Candidate.self, from: FakeData.candidateSucceed!)
-        let viewModel = CandidateViewModel(candidate: candidate, api: api)
+        let viewModel = CandidateViewModel(candidate: candidate, session: session)
         
         XCTAssertFalse(viewModel.candidate.isFavorite)
         await viewModel.setFavorite()
@@ -71,11 +70,12 @@ final class CandidateTests: XCTestCase {
     }
     
     func testSetFavoriteFailedWithInternalError() async {
-        let api = APIFake()
-        api.shouldSucceed = false
-        api.error = API.Error.internalServerError
+        let response = HTTPURLResponse(url: URL(string: "https://openclassrooms.com")!, statusCode: 500, httpVersion: nil, headerFields: nil)
+        let apiError = API.APIError(reason: "Email already in use", error: true)
+        let data = try! JSONEncoder().encode(apiError)
+        let session = URLSessionFake(data: data, response: response)
         let candidate = try! JSONDecoder().decode(Candidate.self, from: FakeData.candidateSucceed!)
-        let viewModel = CandidateViewModel(candidate: candidate, api: api)
+        let viewModel = CandidateViewModel(candidate: candidate, session: session)
         
         await viewModel.setFavorite()
         XCTAssertEqual(viewModel.alertTitle, API.Error.internalServerError.localizedDescription)

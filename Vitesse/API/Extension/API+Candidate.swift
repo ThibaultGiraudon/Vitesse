@@ -11,7 +11,7 @@ extension API {
     /// Defines the available endpoints for candidate-related operations.
     enum CandidatesEndPoints: EndPoint {
         /// Retrieves a specific candidate by ID or lists of all candidates if `id` is not provided.
-        case candidate(id: String?)
+        case candidates
         /// Creates a new candidate.
         case create(candidate: Candidate)
         /// Deletes a candidate by id.
@@ -23,10 +23,7 @@ extension API {
         
         var path: String {
             switch self {
-                case .candidate(let id):
-                    if let id = id {
-                        return "/candidate/\(id)"
-                    }
+                case .candidates:
                     return "/candidate/"
                 case .create:
                     return "/candidate/"
@@ -43,7 +40,7 @@ extension API {
 
         var method: API.Method {
             switch self {
-                case .candidate:
+                case .candidates:
                     .get
                 case .create:
                     .post
@@ -58,7 +55,7 @@ extension API {
         
         var body: Data? {
             switch self {
-                case .candidate, .delete, .favorite:
+                case .candidates, .delete, .favorite:
                     return nil
                 case .create(let candidate), .update(let candidate):
                     let data = ["email": candidate.email, "note": candidate.note, "linkedinURL": candidate.linkedinURL, "firstName": candidate.firstName, "lastName": candidate.lastName, "phone": candidate.phone]

@@ -32,17 +32,17 @@ class CandidatesViewModel: ObservableObject {
     }
     
     /// API instance used for authentication requests.
-    let api: APIProtocol
+    let api: API
     
     /// Initializes the candidates ViewModel with an API instance for injection tests.
-    init(api: APIProtocol = API.shared) {
-        self.api = api
+    init(session: URLSessionProtocol = URLSession.shared) {
+        self.api = API(session: session)
     }
     
     /// Fetches the list of candidates.
     func fetchCandidates() async {
         do {
-            candidates = try await api.call(endPoint: API.CandidatesEndPoints.candidate(id: nil))
+            candidates = try await api.call(endPoint: API.CandidatesEndPoints.candidates)
             
         } catch {
             alertTitle = error.localizedDescription

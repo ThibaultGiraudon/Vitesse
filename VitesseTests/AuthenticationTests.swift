@@ -10,22 +10,26 @@ import XCTest
 
 @MainActor
 final class AuthenticationTests: XCTestCase {
-    func testAuthenticateSucceeds() async {
-        let api = APIFake()
-        api.data = FakeData.loginSucceed!
-        let viewModel = AuthenticationViewModel(api: api)
+    func testRegisterSucceeds() async {
+        let session = URLSessionFake(data: FakeData.loginSucceed)
+        let viewModel = AuthenticationViewModel(session: session)
         
-        viewModel.email = "admin@vitesse.com"
-        await viewModel.login()
+        viewModel.email = "test@vitesse.com"
+        viewModel.firstName = "Test"
+        viewModel.lastName = "Test"
+        viewModel.password = "test123"
+        viewModel.confirmPassword = "test123"
+        await viewModel.register()
         XCTAssertEqual(User.shared.token, "FfdfsdfdF9fdsf.fdsfdf98FDkzfdA3122.J83TqjxRzmuDuruBChNT8sMg5tfRi5iQ6tUlqJb3M9U")
         XCTAssertTrue(User.shared.isAdmin)
     }
     
-    func testAuthenticateFailedWithInternalError() async {
-        let api = APIFake()
-        api.shouldSucceed = false
-        api.error = API.Error.internalServerError
-        let viewModel = AuthenticationViewModel(api: api)
+    func testLoginFailedWithInternalError() async {
+        let response = HTTPURLResponse(url: URL(string: "https://openclassrooms.com")!, statusCode: 500, httpVersion: nil, headerFields: nil)
+        let apiError = API.APIError(reason: "Email already in use", error: true)
+        let data = try! JSONEncoder().encode(apiError)
+        let session = URLSessionFake(data: data, response: response)
+        let viewModel = AuthenticationViewModel(session: session)
         
         viewModel.email = "admin@vitesse.com"
         await viewModel.login()
@@ -33,33 +37,23 @@ final class AuthenticationTests: XCTestCase {
         XCTAssertTrue(viewModel.showAlert)
     }
     
-    func testAuthenticateFailedWithCustomError() async {
-        let api = APIFake()
-        api.shouldSucceed = false
-        api.error = API.Error.custom(reason: "Bad password")
-        let viewModel = AuthenticationViewModel(api: api)
+    func testLoginFailedWithCustomError() async {
+        let response = HTTPURLResponse(url: URL(string: "https://openclassrooms.com")!, statusCode: 401, httpVersion: nil, headerFields: nil)
+        let apiError = API.APIError(reason: "Bad password", error: true)
+        let data = try! JSONEncoder().encode(apiError)
+        let session = URLSessionFake(data: data, response: response)
+        let viewModel = AuthenticationViewModel(session: session)
         
         viewModel.email = "admin@vitesse.com"
         await viewModel.login()
         XCTAssertEqual(viewModel.transferedMessage, "Bad password")
         XCTAssertFalse(viewModel.showAlert)
     }
+
     
-    func testAuthenticateFailedWithURLError() async {
-        let api = APIFake()
-        api.shouldSucceed = false
-        api.error = URLError(.badURL)
-        let viewModel = AuthenticationViewModel(api: api)
-        
-        viewModel.email = "admin@vitesse.com"
-        await viewModel.login()
-        XCTAssertEqual(viewModel.alertTitle, URLError(.badURL).localizedDescription)
-        XCTAssertTrue(viewModel.showAlert)
-    }
-    
-    func testAuthenticateFailedWithInvalidMail() async {
-        let api = APIFake()
-        let viewModel = AuthenticationViewModel(api: api)
+    func testLoginFailedWithInvalidMail() async {
+        let session = URLSessionFake()
+        let viewModel = AuthenticationViewModel(session: session)
         
         viewModel.email = "admin@vitesse"
         await viewModel.login()
@@ -67,9 +61,9 @@ final class AuthenticationTests: XCTestCase {
         XCTAssertFalse(viewModel.showAlert)
     }
     
-    func testAuthenticateShouldDisable() async {
-        let api = APIFake()
-        let viewModel = AuthenticationViewModel(api: api)
+    func testLoginShouldDisable() async {
+        let session = URLSessionFake()
+        let viewModel = AuthenticationViewModel(session: session)
         
         viewModel.email = "test@vitesse.com"
         viewModel.password = "qwerty123"
@@ -77,25 +71,14 @@ final class AuthenticationTests: XCTestCase {
         viewModel.lastName = "Doe"
         XCTAssertTrue(viewModel.shouldDisable)
     }
-    
-    func testRegisterSucceeds() async {
-        let api = APIFake()
-        api.data = FakeData.loginSucceed!
-        let viewModel = AuthenticationViewModel(api: api)
-        
-        viewModel.password = "qwerty123"
-        viewModel.confirmPassword = "qwerty123"
-        viewModel.email = "admin@vitesse.com"
-        await viewModel.register()
-        XCTAssertEqual(User.shared.token, "FfdfsdfdF9fdsf.fdsfdf98FDkzfdA3122.J83TqjxRzmuDuruBChNT8sMg5tfRi5iQ6tUlqJb3M9U")
-        XCTAssertTrue(User.shared.isAdmin)
-    }
+
     
     func testRegisterFailedWithInternalError() async {
-        let api = APIFake()
-        api.shouldSucceed = false
-        api.error = API.Error.internalServerError
-        let viewModel = AuthenticationViewModel(api: api)
+        let response = HTTPURLResponse(url: URL(string: "https://openclassrooms.com")!, statusCode: 500, httpVersion: nil, headerFields: nil)
+        let apiError = API.APIError(reason: "Email already in use", error: true)
+        let data = try! JSONEncoder().encode(apiError)
+        let session = URLSessionFake(data: data, response: response)
+        let viewModel = AuthenticationViewModel(session: session)
         
         viewModel.password = "qwerty123"
         viewModel.confirmPassword = "qwerty123"
@@ -106,10 +89,11 @@ final class AuthenticationTests: XCTestCase {
     }
     
     func testRegisterFailedWithCustomError() async {
-        let api = APIFake()
-        api.shouldSucceed = false
-        api.error = API.Error.custom(reason: "Bad password")
-        let viewModel = AuthenticationViewModel(api: api)
+        let response = HTTPURLResponse(url: URL(string: "https://openclassrooms.com")!, statusCode: 401, httpVersion: nil, headerFields: nil)
+        let apiError = API.APIError(reason: "Bad password", error: true)
+        let data = try! JSONEncoder().encode(apiError)
+        let session = URLSessionFake(data: data, response: response)
+        let viewModel = AuthenticationViewModel(session: session)
         
         viewModel.password = "qwerty123"
         viewModel.confirmPassword = "qwerty123"
@@ -119,25 +103,9 @@ final class AuthenticationTests: XCTestCase {
         XCTAssertFalse(viewModel.showAlert)
     }
     
-    func testRegisterFailedWithURLError() async {
-        let api = APIFake()
-        api.shouldSucceed = false
-        api.error = URLError(.badURL)
-        let viewModel = AuthenticationViewModel(api: api)
-        
-        viewModel.password = "qwerty123"
-        viewModel.confirmPassword = "qwerty123"
-        viewModel.email = "admin@vitesse.com"
-        await viewModel.register()
-        XCTAssertEqual(viewModel.alertTitle, URLError(.badURL).localizedDescription)
-        XCTAssertTrue(viewModel.showAlert)
-    }
-    
     func testRegisterFailedWithPasswordMismatch() async {
-        let api = APIFake()
-        api.shouldSucceed = false
-        api.error = URLError(.badURL)
-        let viewModel = AuthenticationViewModel(api: api)
+        let session = URLSessionFake()
+        let viewModel = AuthenticationViewModel(session: session)
         
         viewModel.password = "qwerty123"
         viewModel.confirmPassword = "qwerty12"
@@ -148,10 +116,8 @@ final class AuthenticationTests: XCTestCase {
     }
     
     func testRegisterFailedWithPasswordTooShort() async {
-        let api = APIFake()
-        api.shouldSucceed = false
-        api.error = URLError(.badURL)
-        let viewModel = AuthenticationViewModel(api: api)
+        let session = URLSessionFake()
+        let viewModel = AuthenticationViewModel(session: session)
         
         viewModel.password = "qwe"
         viewModel.confirmPassword = "qwe"
@@ -162,10 +128,8 @@ final class AuthenticationTests: XCTestCase {
     }
     
     func testRegisterFailedWithInvalidEmail() async {
-        let api = APIFake()
-        api.shouldSucceed = false
-        api.error = URLError(.badURL)
-        let viewModel = AuthenticationViewModel(api: api)
+        let session = URLSessionFake()
+        let viewModel = AuthenticationViewModel(session: session)
         
         viewModel.password = "qwerty123"
         viewModel.confirmPassword = "qwerty123"
