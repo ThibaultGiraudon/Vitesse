@@ -8,7 +8,6 @@
 import SwiftUI
 
 struct ContentView: View {
-    @ObservedObject var viewModel = AppViewModel(user: User.shared)
     @StateObject var user = User.shared
     var body: some View {
         ZStack(alignment: .bottomTrailing) {
@@ -16,7 +15,7 @@ struct ContentView: View {
                 if user.isLoggedIn {
                     CandidatesView()
                 } else {
-                    LoginView(viewModel: viewModel.authViewModel)
+                    LoginView(viewModel: AuthenticationViewModel())
                 } 
             }
             if user.isLoggedIn {
