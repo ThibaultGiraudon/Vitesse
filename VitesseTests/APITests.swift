@@ -72,7 +72,7 @@ final class APITests: XCTestCase {
         let newCandidate = Candidate()
         
         do {
-            let candidates: [Candidate] = try await api.call(endPoint: API.CandidatesEndPoints.createCandidate(candidate: newCandidate))
+            let candidates: [Candidate] = try await api.call(endPoint: API.CandidatesEndPoints.create(candidate: newCandidate))
             guard let candidate = candidates.first else {
                 XCTFail("Candidates should not be empty")
                 return

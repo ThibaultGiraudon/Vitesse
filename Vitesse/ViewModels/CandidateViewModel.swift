@@ -8,6 +8,7 @@
 import Foundation
 
 /// ViewModel managing a single candidate's details and updates.
+@MainActor
 class CandidateViewModel: ObservableObject {
     /// The current candidate being viewed or edited.
     @Published var candidate: Candidate
@@ -40,7 +41,6 @@ class CandidateViewModel: ObservableObject {
     /// Toggles the favorite status of a candidate.
     /// - Updates the `candidate` property.
     /// - Updates the candidate in the API.
-    @MainActor
     func setFavorite() async {
         do {
             candidate = try await api.call(endPoint: API.CandidatesEndPoints.favorite(id: candidate.id))
@@ -51,7 +51,6 @@ class CandidateViewModel: ObservableObject {
     }
     
     /// Updates the candidate's information after validating the input fields.
-    @MainActor
     func updateCandidate() async {
         do {
             transferedMessage = ""

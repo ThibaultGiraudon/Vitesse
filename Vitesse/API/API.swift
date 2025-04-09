@@ -8,7 +8,7 @@
 import Foundation
 
 /// Defines the requirements for an API.
-protocol APIProtocol {
+protocol APIProtocol { // rename interface
     func call<T: Decodable>(endPoint: API.EndPoint) async throws -> T
     func call(endPoint: API.EndPoint) async throws
 }
@@ -88,8 +88,6 @@ class API: APIProtocol {
                     throw Error.custom(reason: decoded.reason)
                 case 404:
                     throw Error.notFound
-                case 500:
-                    throw Error.custom(reason: "This email is already in use.")
                 default:
                     throw Error.internalServerError
             }

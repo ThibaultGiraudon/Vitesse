@@ -13,7 +13,7 @@ extension API {
         /// Retrieves a specific candidate by ID or lists of all candidates if `id` is not provided.
         case candidate(id: String?)
         /// Creates a new candidate.
-        case createCandidate(candidate: Candidate)
+        case create(candidate: Candidate)
         /// Deletes a candidate by id.
         case delete(id: String)
         /// Marks a candidate as favorite or not by id.
@@ -28,7 +28,7 @@ extension API {
                         return "/candidate/\(id)"
                     }
                     return "/candidate/"
-                case .createCandidate:
+                case .create:
                     return "/candidate/"
                 case .delete(let id):
                     return "/candidate/\(id)/"
@@ -45,7 +45,7 @@ extension API {
             switch self {
                 case .candidate:
                     .get
-                case .createCandidate:
+                case .create:
                     .post
                 case .delete:
                     .delete
@@ -60,7 +60,7 @@ extension API {
             switch self {
                 case .candidate, .delete, .favorite:
                     return nil
-                case .createCandidate(let candidate), .update(let candidate):
+                case .create(let candidate), .update(let candidate):
                     let data = ["email": candidate.email, "note": candidate.note, "linkedinURL": candidate.linkedinURL, "firstName": candidate.firstName, "lastName": candidate.lastName, "phone": candidate.phone]
                     return try? JSONSerialization.data(withJSONObject: data)
             }

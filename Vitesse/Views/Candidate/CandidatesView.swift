@@ -18,6 +18,7 @@ struct CandidatesView: View {
         VStack {
             HStack {
                 Button(isEditing ? "Cancel" : "Edit") {
+                    selectedCandidates.removeAll()
                     withAnimation {
                         isEditing.toggle()
                     }

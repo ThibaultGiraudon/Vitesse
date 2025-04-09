@@ -104,7 +104,9 @@ struct AddCandidateView: View {
                 Button("Add") {
                     Task {
                         await viewModel.createCandidate(candidate)
-                        dismiss()
+                        if viewModel.transferedMessage.isEmpty {
+                            dismiss()
+                        }
                     }
                 }
                 .disabled(shouldDisable)

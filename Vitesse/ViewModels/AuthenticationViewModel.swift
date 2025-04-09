@@ -8,6 +8,7 @@
 import Foundation
 
 /// ViewModel handling authentication logic.
+@MainActor
 class AuthenticationViewModel: ObservableObject {
     /// User's input
     @Published var email = ""
@@ -37,7 +38,6 @@ class AuthenticationViewModel: ObservableObject {
     /// Attempts to log in the user.
     /// - Updates `User.shared` upon success.
     /// - Displays error messages in case of failure.
-    @MainActor
     func login() async {
         do {
             guard email.isValidEmail else {
@@ -67,7 +67,6 @@ class AuthenticationViewModel: ObservableObject {
     /// Attempts to register a new user.
     /// - Performs validation checks before sending request.
     /// - In case of success automatically log in the suer.
-    @MainActor
     func register() async {
         do {
             guard password == confirmPassword else {

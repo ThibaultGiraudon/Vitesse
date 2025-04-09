@@ -6,8 +6,10 @@
 //
 
 import XCTest
+import SwiftUI
 @testable import Vitesse
 
+@MainActor
 final class CandidatesTests: XCTestCase {
 
     func testFetchCandidatesSucceeds() async {

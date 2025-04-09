@@ -8,6 +8,7 @@
 import XCTest
 @testable import Vitesse
 
+@MainActor
 final class AuthenticationTests: XCTestCase {
     func testAuthenticateSucceeds() async {
         let api = APIFake()

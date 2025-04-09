@@ -8,6 +8,7 @@
 import Foundation
 
 /// ViewModel managing candidates-related operations.
+@MainActor
 class CandidatesViewModel: ObservableObject {
     /// List of all candidates
     @Published var candidates: [Candidate] = []
@@ -39,7 +40,6 @@ class CandidatesViewModel: ObservableObject {
     }
     
     /// Fetches the list of candidates.
-    @MainActor
     func fetchCandidates() async {
         do {
             candidates = try await api.call(endPoint: API.CandidatesEndPoints.candidate(id: nil))
@@ -53,7 +53,6 @@ class CandidatesViewModel: ObservableObject {
     /// Creates a new candidate.
     /// - Performs validation checks before sending request.
     /// - Adds the created candidate to the list upon success.
-    @MainActor
     func createCandidate(_ candidate: Candidate) async {
         transferedMessage = ""
         guard let phone = candidate.phone else {
@@ -72,7 +71,7 @@ class CandidatesViewModel: ObservableObject {
         }
         
         do {
-            let newCandidate: Candidate = try await api.call(endPoint: API.CandidatesEndPoints.createCandidate(candidate: candidate))
+            let newCandidate: Candidate = try await api.call(endPoint: API.CandidatesEndPoints.create(candidate: candidate))
             candidates.append(newCandidate)
         } catch {
             alertTitle = error.localizedDescription
@@ -82,7 +81,6 @@ class CandidatesViewModel: ObservableObject {
     
     /// Deletes a list of selected candidates.
     /// - Iterates over the selections and removes them from the API and local list.
-    @MainActor
     func deleteCandidates(selectedCandidates: [Candidate]) async {
         for candidate in selectedCandidates {
             guard candidates.contains(where: {$0.id == candidate.id}) else {
@@ -116,7 +114,6 @@ class CandidatesViewModel: ObservableObject {
     
     /// Toggles the favorite status of a candidate.
     /// - Updates the candidate in the API and local list.
-    @MainActor
     func setFavorite(for candidate: Candidate) async {
         do {
             let reponse = try await api.call(endPoint: API.CandidatesEndPoints.favorite(id: candidate.id)) as Candidate
