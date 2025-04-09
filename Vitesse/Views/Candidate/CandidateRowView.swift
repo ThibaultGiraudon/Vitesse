@@ -27,6 +27,8 @@ struct CandidateRowView: View {
         }
         .font(.virgil())
         .padding()
+        .frame(maxWidth: .infinity)
+        .contentShape(Rectangle())
         .background {
             Rectangle()
                 .stroke()
