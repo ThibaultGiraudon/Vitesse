@@ -24,7 +24,7 @@ struct CandidatesView: View {
         }
         .onAppear {
             Task {
-//                await viewModel.fetchCandidates()
+                await viewModel.fetchCandidates()
             }
         }
         .overlay {

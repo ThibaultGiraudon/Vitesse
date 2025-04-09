@@ -17,22 +17,12 @@ struct LoginView: View {
             VStack(alignment: .leading) {
                 Text("Email/Username")
                 TextField("", text: $viewModel.email)
-                    .padding(8)
-                    .background {
-                        RoundedRectangle(cornerRadius: 2)
-                            .stroke()
-                    }
-                    .autocapitalization(.none)
-                    .keyboardType(.emailAddress)
+                    .textFieldStyle(8, keyboardType: .emailAddress)
                     .focused($focused)
                 
                 Text("Password")
                 SecureField("", text: $viewModel.password)
-                    .padding(8)
-                    .background {
-                        RoundedRectangle(cornerRadius: 2)
-                            .stroke()
-                    }
+                    .textFieldStyle(8)
                     .focused($focused)
                 
                 Button("Forgot password?") {}

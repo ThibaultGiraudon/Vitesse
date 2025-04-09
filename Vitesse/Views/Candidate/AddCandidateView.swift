@@ -7,6 +7,28 @@
 
 import SwiftUI
 
+struct TextFieldStyle: ViewModifier {
+    var length: CGFloat
+    var keyboardType: UIKeyboardType
+    func body(content: Content) -> some View {
+        content
+            .padding(length)
+            .background {
+                RoundedRectangle(cornerRadius: 2)
+                    .stroke()
+            }
+            .keyboardType(keyboardType)
+            .autocorrectionDisabled(keyboardType != .default)
+            .textInputAutocapitalization(keyboardType != .default ? .never : .sentences)
+    }
+}
+
+extension View {
+    func textFieldStyle(_ length: CGFloat = 5, keyboardType: UIKeyboardType = .default) -> some View {
+        modifier(TextFieldStyle(length: length, keyboardType: keyboardType))
+    }
+}
+
 struct AddCandidateView: View {
     @StateObject var viewModel: CandidatesViewModel
     @State private var candidate = Candidate()
@@ -27,54 +49,27 @@ struct AddCandidateView: View {
                     }
                     Text("Firstname")
                     TextField("", text: $candidate.firstName)
-                    .padding(5)
-                    .background {
-                        Rectangle()
-                            .stroke()
-                    }
+                        .textFieldStyle()
                     Text("LastName")
                     TextField("", text: $candidate.lastName)
-                    .padding(5)
-                    .background {
-                        Rectangle()
-                            .stroke()
-                    }
+                        .textFieldStyle()
                     Text("Phone")
                     TextField("", text: Binding(
                         get: { candidate.phone ?? "" },
                         set: { candidate.phone = $0.isEmpty ? nil : $0}
                     ))
-                    .padding(5)
-                    .background {
-                        Rectangle()
-                            .stroke()
-                    }
-                    .keyboardType(.phonePad)
+                    .textFieldStyle(keyboardType: .phonePad)
                     .focused($focused)
                     Text("Email")
                     TextField("", text: $candidate.email)
-                        .padding(5)
-                        .background {
-                            Rectangle()
-                                .stroke()
-                        }
-                        .autocapitalization(.none)
-                        .autocorrectionDisabled()
-                        .keyboardType(.emailAddress)
+                        .textFieldStyle(keyboardType: .emailAddress)
                         .focused($focused)
                     Text("LinkedIn")
                     TextField("", text: Binding(
                         get: { candidate.linkedinURL ?? "" },
                         set: { candidate.linkedinURL = $0.isEmpty ? nil : $0 }
                     ))
-                    .padding(5)
-                    .background {
-                        Rectangle()
-                            .stroke()
-                    }
-                    .autocorrectionDisabled()
-                    .autocapitalization(.none)
-                    .keyboardType(.URL)
+                    .textFieldStyle(keyboardType: .URL)
                     .focused($focused)
                     Text("Note")
                     TextField("", text: Binding(
@@ -104,17 +99,12 @@ struct AddCandidateView: View {
                 Button("Add") {
                     Task {
                         await viewModel.createCandidate(candidate)
-                        if viewModel.transferedMessage.isEmpty {
+                        if viewModel.transferedMessage.isEmpty && viewModel.alertTitle.isEmpty {
                             dismiss()
                         }
                     }
                 }
                 .disabled(shouldDisable)
-            }
-        }
-        .alert(viewModel.alertTitle, isPresented: $viewModel.showAlert) {
-            Button("OK") {
-                viewModel.showAlert = false
             }
         }
     }

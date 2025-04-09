@@ -25,7 +25,7 @@ final class AuthenticationTests: XCTestCase {
     }
     
     func testLoginFailedWithInternalError() async {
-        let response = HTTPURLResponse(url: URL(string: "https://openclassrooms.com")!, statusCode: 500, httpVersion: nil, headerFields: nil)
+        let response = HTTPURLResponse(url: URL(string: "https://openclassrooms.com")!, statusCode: 501, httpVersion: nil, headerFields: nil)
         let apiError = API.APIError(reason: "Email already in use", error: true)
         let data = try! JSONEncoder().encode(apiError)
         let session = URLSessionFake(data: data, response: response)
@@ -74,7 +74,7 @@ final class AuthenticationTests: XCTestCase {
 
     
     func testRegisterFailedWithInternalError() async {
-        let response = HTTPURLResponse(url: URL(string: "https://openclassrooms.com")!, statusCode: 500, httpVersion: nil, headerFields: nil)
+        let response = HTTPURLResponse(url: URL(string: "https://openclassrooms.com")!, statusCode: 501, httpVersion: nil, headerFields: nil)
         let apiError = API.APIError(reason: "Email already in use", error: true)
         let data = try! JSONEncoder().encode(apiError)
         let session = URLSessionFake(data: data, response: response)

@@ -11,6 +11,7 @@ struct EmptyCandidatesOverlayView: View {
     @ObservedObject var viewModel: CandidatesViewModel
     var body: some View {
         VStack {
+            Spacer()
             if viewModel.candidates.isEmpty {
                 VStack {
                     Text("No candidates found")

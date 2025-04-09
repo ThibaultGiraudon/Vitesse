@@ -46,7 +46,7 @@ final class CandidateTests: XCTestCase {
     }
     
     func testUpdateCandidateFailedWithInternalError() async {
-        let response = HTTPURLResponse(url: URL(string: "https://openclassrooms.com")!, statusCode: 500, httpVersion: nil, headerFields: nil)
+        let response = HTTPURLResponse(url: URL(string: "https://openclassrooms.com")!, statusCode: 501, httpVersion: nil, headerFields: nil)
         let apiError = API.APIError(reason: "Email already in use", error: true)
         let data = try! JSONEncoder().encode(apiError)
         let session = URLSessionFake(data: data, response: response)
@@ -69,7 +69,7 @@ final class CandidateTests: XCTestCase {
     }
     
     func testSetFavoriteFailedWithInternalError() async {
-        let response = HTTPURLResponse(url: URL(string: "https://openclassrooms.com")!, statusCode: 500, httpVersion: nil, headerFields: nil)
+        let response = HTTPURLResponse(url: URL(string: "https://openclassrooms.com")!, statusCode: 501, httpVersion: nil, headerFields: nil)
         let apiError = API.APIError(reason: "Email already in use", error: true)
         let data = try! JSONEncoder().encode(apiError)
         let session = URLSessionFake(data: data, response: response)

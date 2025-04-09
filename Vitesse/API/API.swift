@@ -49,6 +49,8 @@ class API {
                     throw Error.custom(reason: decoded.reason)
                 case 404:
                     throw Error.notFound
+                case 500:
+                    throw Error.custom(reason: "This email is already taken.")
                 default:
                     throw Error.internalServerError
             }

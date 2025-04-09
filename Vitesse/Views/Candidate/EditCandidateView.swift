@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct EditCandidateView: View {
-    @StateObject var viewModel: CandidateViewModel
+    @ObservedObject var viewModel: CandidateViewModel
     @Environment(\.dismiss) var dismiss
     @FocusState private var focused
     var body: some View {
@@ -21,58 +21,29 @@ struct EditCandidateView: View {
                     }
                     Text("Firstname")
                     TextField("", text: $viewModel.editedCandidate.firstName)
-                        .padding(5)
-                        .background {
-                            Rectangle()
-                                .stroke()
-                        }
-                        .autocorrectionDisabled()
+                        .textFieldStyle()
                         .focused($focused)
                     Text("Lastname")
                     TextField("", text: $viewModel.editedCandidate.lastName)
-                        .padding(5)
-                        .background {
-                            Rectangle()
-                                .stroke()
-                        }
-                        .autocorrectionDisabled()
+                        .textFieldStyle()
                         .focused($focused)
                     Text("Phone")
                     TextField("", text: Binding(
                         get: { viewModel.editedCandidate.phone ?? "" },
                         set: { viewModel.editedCandidate.phone = $0.isEmpty ? nil : $0}
                     ))
-                        .padding(5)
-                        .background {
-                            Rectangle()
-                                .stroke()
-                        }
-                        .keyboardType(.phonePad)
+                    .textFieldStyle(keyboardType: .phonePad)
                         .focused($focused)
                     Text("Email")
                     TextField("", text: $viewModel.editedCandidate.email)
-                        .padding(5)
-                        .background {
-                            Rectangle()
-                                .stroke()
-                        }
-                        .autocapitalization(.none)
-                        .autocorrectionDisabled()
-                        .keyboardType(.emailAddress)
+                        .textFieldStyle(keyboardType: .emailAddress)
                         .focused($focused)
                     Text("LinkedIn")
                     TextField("", text: Binding(
                         get: { viewModel.editedCandidate.linkedinURL ?? "" },
                         set: { viewModel.editedCandidate.linkedinURL = $0.isEmpty ? nil : $0 }
                     ))
-                        .padding(5)
-                        .background {
-                            Rectangle()
-                                .stroke()
-                        }
-                        .autocorrectionDisabled()
-                        .autocapitalization(.none)
-                        .keyboardType(.URL)
+                        .textFieldStyle(keyboardType: .URL)
                         .focused($focused)
                     Text("Note")
                     TextField("", text: Binding(
@@ -104,7 +75,7 @@ struct EditCandidateView: View {
                         Task {
                             focused = false
                             await viewModel.updateCandidate()
-                            if viewModel.transferedMessage.isEmpty {
+                            if viewModel.transferedMessage.isEmpty && !viewModel.showAlert {
                                 dismiss()
                             }
                         }
@@ -113,9 +84,6 @@ struct EditCandidateView: View {
                     .disabled(viewModel.shouldDisable)
                     .foregroundStyle(viewModel.shouldDisable ? .gray : .black)
                 }
-            }
-            .alert(viewModel.alertTitle, isPresented: $viewModel.showAlert) {
-                
             }
         }
     }

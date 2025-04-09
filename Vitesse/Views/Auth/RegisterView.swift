@@ -18,55 +18,28 @@ struct RegisterView: View {
             VStack(alignment: .leading) {
                 Text("First Name")
                 TextField("", text: $viewModel.firstName)
-                    .padding(8)
-                    .background {
-                        RoundedRectangle(cornerRadius: 2)
-                            .stroke()
-                    }
-                    .autocorrectionDisabled()
+                    .textFieldStyle()
                     .focused($focused)
                 
                 Text("Last Name")
                 TextField("", text: $viewModel.lastName)
-                    .padding(8)
-                    .background {
-                        RoundedRectangle(cornerRadius: 2)
-                            .stroke()
-                    }
-                    .autocorrectionDisabled()
+                    .textFieldStyle()
                     .focused($focused)
                 
                 Text("Email")
                 TextField("", text: $viewModel.email)
-                    .padding(8)
-                    .background {
-                        RoundedRectangle(cornerRadius: 2)
-                            .stroke()
-                    }
-                    .autocorrectionDisabled()
-                    .keyboardType(.emailAddress)
-                    .autocapitalization(.none)
+                    .textFieldStyle(keyboardType: .emailAddress)
                     .focused($focused)
                 
                 
                 Text("Password")
                 SecureField("", text: $viewModel.password)
-                    .padding(8)
-                    .background {
-                        RoundedRectangle(cornerRadius: 2)
-                            .stroke()
-                    }
-                    .autocorrectionDisabled()
+                    .textFieldStyle()
                     .focused($focused)
                 
                 Text("Confirm Password")
                 SecureField("", text: $viewModel.confirmPassword)
-                    .padding(8)
-                    .background {
-                        RoundedRectangle(cornerRadius: 2)
-                            .stroke()
-                    }
-                    .autocorrectionDisabled()
+                    .textFieldStyle()
                     .focused($focused)
                 
                 if !viewModel.transferedMessage.isEmpty {
@@ -110,11 +83,6 @@ struct RegisterView: View {
             }
         }
         .font(.cascadia())
-        .alert(viewModel.alertTitle, isPresented: $viewModel.showAlert) {
-            Button("OK") {
-                viewModel.alertTitle = ""
-            }
-        }
         .navigationBarBackButtonHidden(true)
     }
 }
