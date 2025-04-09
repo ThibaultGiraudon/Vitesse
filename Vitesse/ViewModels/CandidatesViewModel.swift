@@ -11,8 +11,15 @@ import Foundation
 @MainActor
 class CandidatesViewModel: ObservableObject {
     /// List of all candidates
-    @Published var candidates: [Candidate] = []
+    @Published var candidates: [Candidate] = [
+        Candidate(),
+        Candidate(),
+        Candidate(),
+        Candidate(),
+    ]
     
+    @Published var selectedCandidates: [Candidate] = []
+        
     /// Handles error.
     @Published var alertTitle = ""
     @Published var showAlert = false
@@ -81,7 +88,7 @@ class CandidatesViewModel: ObservableObject {
     
     /// Deletes a list of selected candidates.
     /// - Iterates over the selections and removes them from the API and local list.
-    func deleteCandidates(selectedCandidates: [Candidate]) async {
+    func deleteCandidates() async {
         for candidate in selectedCandidates {
             guard candidates.contains(where: {$0.id == candidate.id}) else {
                 print("cant find \(candidate.firstName)")
@@ -90,6 +97,7 @@ class CandidatesViewModel: ObservableObject {
             do {
                 let _ = try await api.call(endPoint: API.CandidatesEndPoints.delete(id: candidate.id)) as EmptyResponse
                 candidates.removeAll(where: { $0.id == candidate.id })
+                selectedCandidates = []
             } catch {
                 alertTitle = error.localizedDescription
                 showAlert = true

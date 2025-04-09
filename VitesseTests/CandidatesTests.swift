@@ -118,12 +118,12 @@ final class CandidatesTests: XCTestCase {
     func testDeleteCandidatesSuccess() async {
         let session = URLSessionFake()
         let viewModel = CandidatesViewModel(session: session)
-        let candidates = try! JSONDecoder().decode([Candidate].self, from: FakeData.candidatesSucceed!)
-        viewModel.candidates = candidates
+        viewModel.selectedCandidates = try! JSONDecoder().decode([Candidate].self, from: FakeData.candidatesSucceed!)
+        viewModel.candidates = viewModel.selectedCandidates
         
         XCTAssertEqual(viewModel.candidates.count, 1)
         
-        await viewModel.deleteCandidates(selectedCandidates: candidates)
+        await viewModel.deleteCandidates()
         XCTAssertEqual(viewModel.candidates.count, 0)
     }
     
@@ -132,11 +132,11 @@ final class CandidatesTests: XCTestCase {
         let viewModel = CandidatesViewModel(session: session)
         viewModel.candidates = try! JSONDecoder().decode([Candidate].self, from: FakeData.candidatesSucceed!)
         
-        let candidates = [Candidate()]
+        viewModel.selectedCandidates = [Candidate()]
         
         XCTAssertEqual(viewModel.candidates.count, 1)
         
-        await viewModel.deleteCandidates(selectedCandidates: candidates)
+        await viewModel.deleteCandidates()
         XCTAssertEqual(viewModel.candidates.count, 1)
     }
     
@@ -146,12 +146,12 @@ final class CandidatesTests: XCTestCase {
         let data = try! JSONEncoder().encode(apiError)
         let session = URLSessionFake(data: data, response: response)
         let viewModel = CandidatesViewModel(session: session)
-        let candidates = try! JSONDecoder().decode([Candidate].self, from: FakeData.candidatesSucceed!)
-        viewModel.candidates = candidates
+        viewModel.selectedCandidates = try! JSONDecoder().decode([Candidate].self, from: FakeData.candidatesSucceed!)
+        viewModel.candidates = viewModel.selectedCandidates
         
         XCTAssertEqual(viewModel.candidates.count, 1)
         
-        await viewModel.deleteCandidates(selectedCandidates: candidates)
+        await viewModel.deleteCandidates()
         XCTAssertEqual(viewModel.alertTitle, API.Error.internalServerError.localizedDescription)
         XCTAssertEqual(viewModel.candidates.count, 1)
     }
