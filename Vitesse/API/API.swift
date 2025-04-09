@@ -61,33 +61,4 @@ class API {
         
         return decoded
     }
-
-//    /// Sends a request to the given endpoint without expecting a response..
-//    ///
-//    /// - Parameter endPoint: The API endpoint to call.
-//    /// - Throws: An `API.Error` if the request fails or the response in invalid.
-//    func call(endPoint: EndPoint) async throws {
-//        guard let request = endPoint.request else {
-//            throw Error.badRequest
-//        }
-//        
-//        let (data, response) = try await session.data(for: request)
-//        
-//        guard let httpResponse = response as? HTTPURLResponse else {
-//            throw Error.responseError
-//        }
-//        
-//        guard httpResponse.statusCode == 200 || httpResponse.statusCode == 201 else {
-//            print(httpResponse.statusCode)
-//            let decoded = try JSONDecoder().decode(APIError.self, from: data)
-//            switch httpResponse.statusCode {
-//                case 401:
-//                    throw Error.custom(reason: decoded.reason)
-//                case 404:
-//                    throw Error.notFound
-//                default:
-//                    throw Error.internalServerError
-//            }
-//        }
-//    }
 }
